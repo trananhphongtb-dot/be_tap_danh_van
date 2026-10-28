@@ -46,6 +46,7 @@ class MainActivity : ComponentActivity() {
                     HomeScreen(
                         stages = WordBank.stages,
                         store = store,
+                        tts = tts,
                         onStage = { currentStage = it },
                     )
                 } else {
@@ -61,6 +62,7 @@ class MainActivity : ComponentActivity() {
                         picker = picker,
                         store = store,
                         onBack = { currentStage = null },
+                        onNextStage = { if (stage < 7) currentStage = stage + 1 },
                     )
                 }
             }

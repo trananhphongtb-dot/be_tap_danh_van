@@ -33,6 +33,23 @@ object VietnameseTones {
         m
     }
 
+    /**
+     * Dấu hiển thị dạng KÝ HIỆU DẤU, không phải chữ "huyền", "sắc"...
+     * Dùng vòng tròn chấm + dấu kết hợp để dấu hiện rõ 1 mình, ví dụ ◌̀ là dấu huyền.
+     * Không có ô "không dấu": từ không dấu thì đúng là không chọn dấu nào.
+     */
+    val TONE_MARKS: Map<String, String> = mapOf(
+        "không dấu" to "",
+        "huyền" to "◌̀",
+        "sắc" to "◌́",
+        "hỏi" to "◌̉",
+        "ngã" to "◌̃",
+        "nặng" to "◌̣",
+    )
+
+    /** Các tên dấu có dấu thật (để làm ô gây nhiễu khi từ không dấu). */
+    val TONED_TONE_NAMES: List<String> get() = TONE_NAMES.filter { it != "không dấu" }
+
     /** Tách nguyên âm đã có dấu thành (nguyên âm gốc, tên dấu). Ví dụ "ò" -> ("o", "huyền"). */
     fun decompose(tonedVowel: String): Pair<String, String> =
         reverse[tonedVowel] ?: (tonedVowel to "không dấu")

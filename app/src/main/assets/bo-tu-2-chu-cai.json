@@ -30,13 +30,13 @@
         "ghi_chu": "Ngân hàng chặng 3 đã mở rộng: đoạn dài từ 10 từ trở lên, mỗi đoạn 2 từ đọc được, đáp án chọn 2 từ, không bấm vào từ trong đoạn. Đoạn mới chủ yếu theo mẫu có sẵn với các cặp người + danh từ khác nhau, đoạn văn khác nhau thì tính là câu khác nhau, cặp đáp án có thể lặp lại ở đoạn khác."
       },
       {
-        "cach_choi": "Nghe giọng đọc tiếng Việt 1 từ, rồi xếp chữ từ 9 ô: 3 phụ âm (1 phụ âm đầu đúng + 2 gây nhiễu), 3 nguyên âm (1 nguyên âm đúng + 2 gây nhiễu), 3 dấu (1 dấu đúng + 2 gây nhiễu; với từ không dấu thì dấu đúng là 'không dấu'). Bé chọn 1 phụ âm + 1 nguyên âm + 1 dấu để ghép thành từ. Ví dụ nghe 'bò' thì chọn b + o + huyền = bò.",
+        "cach_choi": "Nghe giọng đọc tiếng Việt 1 từ, rồi xếp chữ từ 9 ô: 3 phụ âm (1 phụ âm đầu đúng + 2 gây nhiễu), 3 nguyên âm (1 nguyên âm đúng + 2 gây nhiễu), 3 dấu (1 dấu đúng + 2 gây nhiễu; với từ không dấu thì dấu đúng là 'không dấu'). Bé chọn 1 phụ âm + 1 nguyên âm + 1 dấu để ghép thành từ. Ví dụ nghe 'bò' thì chọn b + o + huyền = bò. Giao diện ghép: 2 ô to ở trên đại diện cho từ cần ghép (ô 1 = phụ âm, ô 2 = nguyên âm kèm dấu); chạm ô chữ ở dưới thì chữ nhảy lên ô to tương ứng; chọn dấu thì dấu tự điền vào nguyên âm trong ô to 2. Luôn hiện đủ hàng ô dấu, kể cả từ không dấu (dấu đúng là 'không dấu'). Có nút '✓ Hoàn thành': chỉ khi bấm nút tích này mới tính điểm, trước đó bé vẫn sửa được. Bấm lại 1 ô chữ đã chọn thì chữ đó mất khỏi ô to để chọn lại.",
         "ten": "Ghép chữ và dấu câu thành từ theo giọng đọc",
         "thu_tu": 4
       },
       {
-        "cach_choi": "Giọng đọc tiếng Việt yêu cầu 1 chữ cái. Các chữ rơi thẳng từ trên xuống, phẳng, đơn giản, tốc độ vừa phải, không có hình em bé trong màn chơi. Bé chạm vào chữ đúng để bắt. Chữ yêu cầu rơi qua khỏi màn hình mà không bắt được tính là 1 câu sai, áp dụng luật điểm chung (sai 2 câu trừ 1 ở câu sai thứ 2) - nếu anh muốn chữ rơi hụt trừ ngay 1 điểm thì báo lại để đổi.",
-        "ten": "Bắt chữ rơi",
+        "cach_choi": "Giọng đọc tiếng Việt yêu cầu 1 từ 2 chữ cái. Các từ rơi lẻ tẻ từ đỉnh xuống, mỗi từ 1 màu khác nhau, rơi liên tục không sang màn mới. Từ cần bắt rơi nửa đường mà chưa chọn được thì đọc lại 1 lần. Chạm đúng hay sai đều đọc từ mới và rơi tiếp, đủ 10 điểm mới dừng.",
+        "ten": "Từ rơi",
         "thu_tu": 5
       },
       {
@@ -49,7 +49,7 @@
       {
         "thu_tu": 7,
         "ten": "Nhìn hình tự xếp chữ",
-        "cach_choi": "Cho bé 1 hình (chỉ từ có hình). Bé tự xếp chữ thành từ đúng với hình, từ các ô chữ: 3 phụ âm (1 phụ âm đầu đúng + 2 phụ âm gây nhiễu), 3 nguyên âm (1 nguyên âm đúng + 2 nguyên âm gây nhiễu), 3 dấu (1 dấu đúng + 2 dấu gây nhiễu; với từ không dấu thì dấu đúng là 'không dấu'). Bé chọn 1 phụ âm + 1 nguyên âm + 1 dấu để ghép thành từ, rồi đối chiếu với hình. Ô nguyên âm là nguyên âm trơn chưa có dấu, dấu là ô riêng, giống chặng 4. Các ô gây nhiễu xáo trộn mỗi câu.",
+        "cach_choi": "Cho bé 1 hình (chỉ từ có hình). Bé tự xếp chữ thành từ đúng với hình, từ các ô chữ: 3 phụ âm (1 phụ âm đầu đúng + 2 phụ âm gây nhiễu), 3 nguyên âm (1 nguyên âm đúng + 2 nguyên âm gây nhiễu), 3 dấu (1 dấu đúng + 2 dấu gây nhiễu; với từ không dấu thì dấu đúng là 'không dấu'). Bé chọn 1 phụ âm + 1 nguyên âm + 1 dấu để ghép thành từ, rồi đối chiếu với hình. Ô nguyên âm là nguyên âm trơn chưa có dấu, dấu là ô riêng, giống chặng 4. Các ô gây nhiễu xáo trộn mỗi câu. Giao diện ghép: 2 ô to ở trên đại diện cho từ cần ghép (ô 1 = phụ âm, ô 2 = nguyên âm kèm dấu); chạm ô chữ ở dưới thì chữ nhảy lên ô to tương ứng; chọn dấu thì dấu tự điền vào nguyên âm trong ô to 2. Luôn hiện đủ hàng ô dấu, kể cả từ không dấu (dấu đúng là 'không dấu'). Có nút '✓ Hoàn thành': chỉ khi bấm nút tích này mới tính điểm, trước đó bé vẫn sửa được. Bấm lại 1 ô chữ đã chọn thì chữ đó mất khỏi ô to để chọn lại.",
         "vi_du": "Hình con bò: phụ âm b, c, d; nguyên âm o, a, e; dấu huyền, sắc, nặng. Bé chọn b + o + huyền = bò mới đúng.",
         "diem": "Dùng chung luật điểm các chặng khác: 10 điểm qua chặng, đúng +1 điểm, sai 2 câu trừ 1 điểm ở câu sai thứ 2. Chi tiết bộ đếm sai là cộng dồn hay liên tiếp và điểm có sàn 0 hay không vẫn chưa được anh xác nhận chung cho mọi chặng, áp dụng tạm như các chặng khác.",
         "nguon_tu": "Chỉ từ có hình (160 từ sau khi thêm bô), vì cần hình làm gợi ý. Từ không hình không dùng ở chặng này.",
@@ -1106,15 +1106,15 @@
       },
       {
         "dap_an": [
-          "ba",
+          "bé",
           "cá"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng ba đến chợ mua cá tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi sáng, cháu nhỏ tìm bé, cá khắp vườn nhà, cháu nhỏ ngắm bé, cá thật lâu rồi nói cho bạn học nghe.",
         "id": "DVAN3-021",
         "lua_chon_sai": [
-          "tô",
-          "tổ"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1125,73 +1125,73 @@
       },
       {
         "dap_an": [
-          "ba",
-          "gà"
-        ],
-        "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng ba đến chợ mua gà tươi ngon đem nấu bữa trưa cho gia đình mình.",
-        "id": "DVAN3-022",
-        "lua_chon_sai": [
-          "tủ",
-          "tơ"
-        ],
-        "so_tu": 17,
-        "tu_doc_duoc": [
-          "ba",
-          "gà"
-        ],
-        "mau": "Buổi sáng {p} đến chợ mua {n} tươi ngon đem nấu bữa trưa cho gia đình mình."
-      },
-      {
-        "dap_an": [
-          "ba",
-          "cà"
-        ],
-        "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng ba đến chợ mua cà tươi ngon đem nấu bữa trưa cho gia đình mình.",
-        "id": "DVAN3-023",
-        "lua_chon_sai": [
-          "dù",
-          "kệ"
-        ],
-        "so_tu": 17,
-        "tu_doc_duoc": [
-          "ba",
-          "cà"
-        ],
-        "mau": "Buổi sáng {p} đến chợ mua {n} tươi ngon đem nấu bữa trưa cho gia đình mình."
-      },
-      {
-        "dap_an": [
-          "ba",
-          "bí"
-        ],
-        "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng ba đến chợ mua bí tươi ngon đem nấu bữa trưa cho gia đình mình.",
-        "id": "DVAN3-024",
-        "lua_chon_sai": [
-          "mở",
-          "vò"
-        ],
-        "so_tu": 17,
-        "tu_doc_duoc": [
-          "ba",
-          "bí"
-        ],
-        "mau": "Buổi sáng {p} đến chợ mua {n} tươi ngon đem nấu bữa trưa cho gia đình mình."
-      },
-      {
-        "dap_an": [
-          "ba",
-          "su"
-        ],
-        "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng ba đến chợ mua su tươi ngon đem nấu bữa trưa cho gia đình mình.",
-        "id": "DVAN3-025",
-        "lua_chon_sai": [
-          "vo",
+          "cô",
           "xe"
         ],
+        "do_dai_ky_tu": 73,
+        "doan": "Ngày hội thật vui! Cháu nhỏ cầm cô, cháu nhỏ mang xe chạy quanh sân trường, bạn học cười thật lớn.",
+        "id": "DVAN3-022",
+        "lua_chon_sai": [
+          "gà",
+          "tô"
+        ],
+        "so_tu": 17,
+        "tu_doc_duoc": [
+          "ba",
+          "gà"
+        ],
+        "mau": "Buổi sáng {p} đến chợ mua {n} tươi ngon đem nấu bữa trưa cho gia đình mình."
+      },
+      {
+        "dap_an": [
+          "ba",
+          "tô"
+        ],
+        "do_dai_ky_tu": 73,
+        "doan": "Buổi chiều, cháu nhỏ hỏi thầy giáo: ba đâu rồi, tô đâu rồi? Thầy giáo chỉ cho cháu nhỏ thấy ba, tô trong lớp học.",
+        "id": "DVAN3-023",
+        "lua_chon_sai": [
+          "gà",
+          "cờ"
+        ],
+        "so_tu": 17,
+        "tu_doc_duoc": [
+          "ba",
+          "cà"
+        ],
+        "mau": "Buổi sáng {p} đến chợ mua {n} tươi ngon đem nấu bữa trưa cho gia đình mình."
+      },
+      {
+        "dap_an": [
+          "mẹ",
+          "mũ"
+        ],
+        "do_dai_ky_tu": 73,
+        "doan": "Trời nắng gắt, cháu nhỏ đội nón rộng, cháu nhỏ mang mẹ, mũ ngoài công viên, cháu nhỏ chơi cùng bạn học thật vui.",
+        "id": "DVAN3-024",
+        "lua_chon_sai": [
+          "gà",
+          "tô"
+        ],
+        "so_tu": 17,
+        "tu_doc_duoc": [
+          "ba",
+          "bí"
+        ],
+        "mau": "Buổi sáng {p} đến chợ mua {n} tươi ngon đem nấu bữa trưa cho gia đình mình."
+      },
+      {
+        "dap_an": [
+          "bà",
+          "cờ"
+        ],
+        "do_dai_ky_tu": 73,
+        "doan": "Buổi tối, cháu nhỏ ngồi bên bàn lớn, cháu nhỏ xem bà, cờ trong phòng ngủ, cháu nhỏ cười thật tươi.",
+        "id": "DVAN3-025",
+        "lua_chon_sai": [
+          "gà",
+          "tô"
+        ],
         "so_tu": 17,
         "tu_doc_duoc": [
           "ba",
@@ -1201,15 +1201,15 @@
       },
       {
         "dap_an": [
-          "ba",
-          "mì"
+          "bé",
+          "lá"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng ba đến chợ mua mì tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Mùa thu, hoa vàng rơi khắp sân trường, cháu nhỏ nhặt bé, lá xếp thành hình ngôi sao, bạn học khen cháu nhỏ thật giỏi.",
         "id": "DVAN3-026",
         "lua_chon_sai": [
-          "xô",
-          "xé"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1220,15 +1220,15 @@
       },
       {
         "dap_an": [
-          "bà",
-          "cá"
+          "cô",
+          "tổ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bà đến chợ mua cá tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Sáng sớm, sương sớm giăng khắp vườn nhà, cháu nhỏ thấy cô, tổ bên gốc cây lớn, cháu nhỏ reo lên thật lớn.",
         "id": "DVAN3-027",
         "lua_chon_sai": [
-          "bố",
-          "dì"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1239,15 +1239,15 @@
       },
       {
         "dap_an": [
-          "bà",
-          "gà"
+          "ba",
+          "rổ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bà đến chợ mua gà tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi trưa, cháu nhỏ ngủ dậy, cháu nhỏ tìm ba, rổ trong phòng học, cháu nhỏ mang ba, rổ ngoài sân chơi.",
         "id": "DVAN3-028",
         "lua_chon_sai": [
-          "mợ",
-          "cò"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1258,15 +1258,15 @@
       },
       {
         "dap_an": [
-          "bà",
-          "cà"
+          "mẹ",
+          "ly"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bà đến chợ mua cà tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Ngày cuối tuần, gia đình cháu nhỏ dạo chơi công viên, cháu nhỏ mang mẹ, ly chụp ảnh cùng bạn học thật đẹp.",
         "id": "DVAN3-029",
         "lua_chon_sai": [
-          "bọ",
-          "vở"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1278,14 +1278,14 @@
       {
         "dap_an": [
           "bà",
-          "bí"
+          "tủ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bà đến chợ mua bí tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi sáng, thầy giáo mang bà, tủ vào lớp học, học sinh xem bà, tủ thật chăm chú, lớp học vui nhộn trong buổi học.",
         "id": "DVAN3-030",
         "lua_chon_sai": [
-          "sổ",
-          "hũ"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1296,15 +1296,15 @@
       },
       {
         "dap_an": [
-          "bà",
-          "su"
+          "bé",
+          "nơ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bà đến chợ mua su tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Chiều mưa, cháu nhỏ đứng bên cửa lớn, cháu nhỏ nhìn bé, nơ ngoài hiên nhà, cháu nhỏ nói chuyện cho bạn học nghe.",
         "id": "DVAN3-031",
         "lua_chon_sai": [
-          "lu",
-          "đò"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1315,15 +1315,15 @@
       },
       {
         "dap_an": [
-          "bà",
-          "mì"
+          "cô",
+          "mũ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bà đến chợ mua mì tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi tối, cháu nhỏ đọc truyện thần thoại, cháu nhỏ thấy cô, mũ trong vườn hoa đẹp, cháu nhỏ ngủ ngon trong phòng đẹp.",
         "id": "DVAN3-032",
         "lua_chon_sai": [
-          "mỡ",
-          "tư"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1334,15 +1334,15 @@
       },
       {
         "dap_an": [
-          "mẹ",
-          "cá"
+          "ba",
+          "đá"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng mẹ đến chợ mua cá tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi sáng, cháu nhỏ tìm ba, đá khắp vườn nhà, cháu nhỏ ngắm ba, đá thật lâu rồi nói cho bạn học nghe.",
         "id": "DVAN3-033",
         "lua_chon_sai": [
-          "sờ",
-          "sợ"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1354,14 +1354,14 @@
       {
         "dap_an": [
           "mẹ",
-          "gà"
+          "cờ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng mẹ đến chợ mua gà tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Ngày hội thật vui! Cháu nhỏ cầm mẹ, cháu nhỏ mang cờ chạy quanh sân trường, bạn học cười thật lớn.",
         "id": "DVAN3-034",
         "lua_chon_sai": [
-          "vẽ",
-          "hạ"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1372,15 +1372,15 @@
       },
       {
         "dap_an": [
-          "mẹ",
-          "cà"
+          "bà",
+          "ly"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng mẹ đến chợ mua cà tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi chiều, cháu nhỏ hỏi thầy giáo: bà đâu rồi, ly đâu rồi? Thầy giáo chỉ cho cháu nhỏ thấy bà, ly trong lớp học.",
         "id": "DVAN3-035",
         "lua_chon_sai": [
-          "ra",
-          "dữ"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1391,15 +1391,15 @@
       },
       {
         "dap_an": [
-          "mẹ",
-          "bí"
+          "bé",
+          "tủ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng mẹ đến chợ mua bí tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Trời nắng gắt, cháu nhỏ đội nón rộng, cháu nhỏ mang bé, tủ ngoài công viên, cháu nhỏ chơi cùng bạn học thật vui.",
         "id": "DVAN3-036",
         "lua_chon_sai": [
-          "hư",
-          "no"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1410,15 +1410,15 @@
       },
       {
         "dap_an": [
-          "mẹ",
-          "su"
+          "cô",
+          "lá"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng mẹ đến chợ mua su tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi tối, cháu nhỏ ngồi bên bàn lớn, cháu nhỏ xem cô, lá trong phòng ngủ, cháu nhỏ cười thật tươi.",
         "id": "DVAN3-037",
         "lua_chon_sai": [
-          "vỡ",
-          "ca"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1429,15 +1429,15 @@
       },
       {
         "dap_an": [
-          "mẹ",
-          "mì"
+          "ba",
+          "nơ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng mẹ đến chợ mua mì tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Mùa thu, hoa vàng rơi khắp sân trường, cháu nhỏ nhặt ba, nơ xếp thành hình ngôi sao, bạn học khen cháu nhỏ thật giỏi.",
         "id": "DVAN3-038",
         "lua_chon_sai": [
-          "da",
-          "dò"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1448,15 +1448,15 @@
       },
       {
         "dap_an": [
-          "bé",
-          "cá"
+          "mẹ",
+          "tổ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bé đến chợ mua cá tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Sáng sớm, sương sớm giăng khắp vườn nhà, cháu nhỏ thấy mẹ, tổ bên gốc cây lớn, cháu nhỏ reo lên thật lớn.",
         "id": "DVAN3-039",
         "lua_chon_sai": [
-          "đè",
-          "gò"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1467,15 +1467,15 @@
       },
       {
         "dap_an": [
-          "bé",
-          "gà"
+          "bà",
+          "đá"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bé đến chợ mua gà tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi trưa, cháu nhỏ ngủ dậy, cháu nhỏ tìm bà, đá trong phòng học, cháu nhỏ mang bà, đá ngoài sân chơi.",
         "id": "DVAN3-040",
         "lua_chon_sai": [
-          "há",
-          "hé"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1487,14 +1487,14 @@
       {
         "dap_an": [
           "bé",
-          "cà"
+          "xô"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bé đến chợ mua cà tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Ngày cuối tuần, gia đình cháu nhỏ dạo chơi công viên, cháu nhỏ mang bé, xô chụp ảnh cùng bạn học thật đẹp.",
         "id": "DVAN3-041",
         "lua_chon_sai": [
-          "hò",
-          "hú"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1505,15 +1505,15 @@
       },
       {
         "dap_an": [
-          "bé",
-          "bí"
+          "cô",
+          "xô"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bé đến chợ mua bí tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi sáng, thầy giáo mang cô, xô vào lớp học, học sinh xem cô, xô thật chăm chú, lớp học vui nhộn trong buổi học.",
         "id": "DVAN3-042",
         "lua_chon_sai": [
-          "kê",
-          "kí"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1524,15 +1524,15 @@
       },
       {
         "dap_an": [
-          "bé",
-          "su"
+          "ba",
+          "ly"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bé đến chợ mua su tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Chiều mưa, cháu nhỏ đứng bên cửa lớn, cháu nhỏ nhìn ba, ly ngoài hiên nhà, cháu nhỏ nói chuyện cho bạn học nghe.",
         "id": "DVAN3-043",
         "lua_chon_sai": [
-          "la",
-          "lè"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1543,15 +1543,15 @@
       },
       {
         "dap_an": [
-          "bé",
-          "mì"
+          "mẹ",
+          "rổ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bé đến chợ mua mì tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi tối, cháu nhỏ đọc truyện thần thoại, cháu nhỏ thấy mẹ, rổ trong vườn hoa đẹp, cháu nhỏ ngủ ngon trong phòng đẹp.",
         "id": "DVAN3-044",
         "lua_chon_sai": [
-          "lì",
-          "lo"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1562,15 +1562,15 @@
       },
       {
         "dap_an": [
-          "cô",
-          "cá"
+          "bà",
+          "xô"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng cô đến chợ mua cá tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi sáng, cháu nhỏ tìm bà, xô khắp vườn nhà, cháu nhỏ ngắm bà, xô thật lâu rồi nói cho bạn học nghe.",
         "id": "DVAN3-045",
         "lua_chon_sai": [
-          "lơ",
-          "lỡ"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1581,15 +1581,15 @@
       },
       {
         "dap_an": [
-          "cô",
-          "gà"
+          "bé",
+          "lọ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng cô đến chợ mua gà tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Ngày hội thật vui! Cháu nhỏ cầm bé, cháu nhỏ mang lọ chạy quanh sân trường, bạn học cười thật lớn.",
         "id": "DVAN3-046",
         "lua_chon_sai": [
-          "ma",
-          "mê"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1601,14 +1601,14 @@
       {
         "dap_an": [
           "cô",
-          "cà"
+          "lọ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng cô đến chợ mua cà tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi chiều, cháu nhỏ hỏi thầy giáo: cô đâu rồi, lọ đâu rồi? Thầy giáo chỉ cho cháu nhỏ thấy cô, lọ trong lớp học.",
         "id": "DVAN3-047",
         "lua_chon_sai": [
-          "mè",
-          "mí"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1619,15 +1619,15 @@
       },
       {
         "dap_an": [
-          "cô",
-          "bí"
+          "ba",
+          "lọ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng cô đến chợ mua bí tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Trời nắng gắt, cháu nhỏ đội nón rộng, cháu nhỏ mang ba, lọ ngoài công viên, cháu nhỏ chơi cùng bạn học thật vui.",
         "id": "DVAN3-048",
         "lua_chon_sai": [
-          "mổ",
-          "mờ"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1638,15 +1638,15 @@
       },
       {
         "dap_an": [
-          "cô",
-          "su"
+          "mẹ",
+          "tô"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng cô đến chợ mua su tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi tối, cháu nhỏ ngồi bên bàn lớn, cháu nhỏ xem mẹ, tô trong phòng ngủ, cháu nhỏ cười thật tươi.",
         "id": "DVAN3-049",
         "lua_chon_sai": [
-          "mù",
-          "ná"
+          "gà",
+          "cờ"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1657,15 +1657,15 @@
       },
       {
         "dap_an": [
-          "cô",
-          "mì"
+          "bà",
+          "tô"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng cô đến chợ mua mì tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Mùa thu, hoa vàng rơi khắp sân trường, cháu nhỏ nhặt bà, tô xếp thành hình ngôi sao, bạn học khen cháu nhỏ thật giỏi.",
         "id": "DVAN3-050",
         "lua_chon_sai": [
-          "nổ",
-          "rò"
+          "gà",
+          "cờ"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1676,15 +1676,15 @@
       },
       {
         "dap_an": [
-          "bố",
-          "cá"
+          "bé",
+          "cờ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bố đến chợ mua cá tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Sáng sớm, sương sớm giăng khắp vườn nhà, cháu nhỏ thấy bé, cờ bên gốc cây lớn, cháu nhỏ reo lên thật lớn.",
         "id": "DVAN3-051",
         "lua_chon_sai": [
-          "ru",
-          "rú"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1695,15 +1695,15 @@
       },
       {
         "dap_an": [
-          "bố",
-          "gà"
+          "cô",
+          "rổ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bố đến chợ mua gà tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi trưa, cháu nhỏ ngủ dậy, cháu nhỏ tìm cô, rổ trong phòng học, cháu nhỏ mang cô, rổ ngoài sân chơi.",
         "id": "DVAN3-052",
         "lua_chon_sai": [
-          "rờ",
-          "sa"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1714,15 +1714,15 @@
       },
       {
         "dap_an": [
-          "bố",
-          "cà"
+          "ba",
+          "tủ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bố đến chợ mua cà tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Ngày cuối tuần, gia đình cháu nhỏ dạo chơi công viên, cháu nhỏ mang ba, tủ chụp ảnh cùng bạn học thật đẹp.",
         "id": "DVAN3-053",
         "lua_chon_sai": [
-          "sả",
-          "se"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1733,15 +1733,15 @@
       },
       {
         "dap_an": [
-          "bố",
-          "bí"
+          "mẹ",
+          "lọ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bố đến chợ mua bí tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi sáng, thầy giáo mang mẹ, lọ vào lớp học, học sinh xem mẹ, lọ thật chăm chú, lớp học vui nhộn trong buổi học.",
         "id": "DVAN3-054",
         "lua_chon_sai": [
-          "sẻ",
-          "so"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1752,15 +1752,15 @@
       },
       {
         "dap_an": [
-          "bố",
-          "su"
+          "bà",
+          "nơ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bố đến chợ mua su tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Chiều mưa, cháu nhỏ đứng bên cửa lớn, cháu nhỏ nhìn bà, nơ ngoài hiên nhà, cháu nhỏ nói chuyện cho bạn học nghe.",
         "id": "DVAN3-055",
         "lua_chon_sai": [
-          "số",
-          "sở"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1771,15 +1771,15 @@
       },
       {
         "dap_an": [
-          "bố",
-          "mì"
+          "bé",
+          "mũ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng bố đến chợ mua mì tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi tối, cháu nhỏ đọc truyện thần thoại, cháu nhỏ thấy bé, mũ trong vườn hoa đẹp, cháu nhỏ ngủ ngon trong phòng đẹp.",
         "id": "DVAN3-056",
         "lua_chon_sai": [
-          "sĩ",
-          "sọ"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1790,15 +1790,15 @@
       },
       {
         "dap_an": [
-          "dì",
-          "cá"
+          "cô",
+          "nơ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng dì đến chợ mua cá tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi sáng, cháu nhỏ tìm cô, nơ khắp vườn nhà, cháu nhỏ ngắm cô, nơ thật lâu rồi nói cho bạn học nghe.",
         "id": "DVAN3-057",
         "lua_chon_sai": [
-          "tê",
-          "tò"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1809,15 +1809,15 @@
       },
       {
         "dap_an": [
-          "dì",
-          "gà"
+          "ba",
+          "cờ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng dì đến chợ mua gà tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Ngày hội thật vui! Cháu nhỏ cầm ba, cháu nhỏ mang cờ chạy quanh sân trường, bạn học cười thật lớn.",
         "id": "DVAN3-058",
         "lua_chon_sai": [
-          "va",
-          "vá"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1828,15 +1828,15 @@
       },
       {
         "dap_an": [
-          "dì",
-          "cà"
+          "mẹ",
+          "xô"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng dì đến chợ mua cà tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi chiều, cháu nhỏ hỏi thầy giáo: mẹ đâu rồi, xô đâu rồi? Thầy giáo chỉ cho cháu nhỏ thấy mẹ, xô trong lớp học.",
         "id": "DVAN3-059",
         "lua_chon_sai": [
-          "vả",
-          "ve"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1847,15 +1847,15 @@
       },
       {
         "dap_an": [
-          "dì",
-          "bí"
+          "bà",
+          "rổ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng dì đến chợ mua bí tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Trời nắng gắt, cháu nhỏ đội nón rộng, cháu nhỏ mang bà, rổ ngoài công viên, cháu nhỏ chơi cùng bạn học thật vui.",
         "id": "DVAN3-060",
         "lua_chon_sai": [
-          "vè",
-          "vé"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1866,15 +1866,15 @@
       },
       {
         "dap_an": [
-          "dì",
-          "su"
+          "bé",
+          "tổ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng dì đến chợ mua su tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi tối, cháu nhỏ ngồi bên bàn lớn, cháu nhỏ xem bé, tổ trong phòng ngủ, cháu nhỏ cười thật tươi.",
         "id": "DVAN3-061",
         "lua_chon_sai": [
-          "ví",
-          "vó"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1885,15 +1885,15 @@
       },
       {
         "dap_an": [
-          "dì",
-          "mì"
+          "cô",
+          "tủ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng dì đến chợ mua mì tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Mùa thu, hoa vàng rơi khắp sân trường, cháu nhỏ nhặt cô, tủ xếp thành hình ngôi sao, bạn học khen cháu nhỏ thật giỏi.",
         "id": "DVAN3-062",
         "lua_chon_sai": [
-          "vô",
-          "vồ"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1904,15 +1904,15 @@
       },
       {
         "dap_an": [
-          "mợ",
-          "cá"
+          "ba",
+          "mũ"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng mợ đến chợ mua cá tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Sáng sớm, sương sớm giăng khắp vườn nhà, cháu nhỏ thấy ba, mũ bên gốc cây lớn, cháu nhỏ reo lên thật lớn.",
         "id": "DVAN3-063",
         "lua_chon_sai": [
-          "vỗ",
-          "vù"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1923,15 +1923,15 @@
       },
       {
         "dap_an": [
-          "mợ",
-          "gà"
+          "mẹ",
+          "đá"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng mợ đến chợ mua gà tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi trưa, cháu nhỏ ngủ dậy, cháu nhỏ tìm mẹ, đá trong phòng học, cháu nhỏ mang mẹ, đá ngoài sân chơi.",
         "id": "DVAN3-064",
         "lua_chon_sai": [
-          "vờ",
-          "xa"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1942,15 +1942,15 @@
       },
       {
         "dap_an": [
-          "mợ",
-          "cà"
+          "bà",
+          "lá"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng mợ đến chợ mua cà tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Ngày cuối tuần, gia đình cháu nhỏ dạo chơi công viên, cháu nhỏ mang bà, lá chụp ảnh cùng bạn học thật đẹp.",
         "id": "DVAN3-065",
         "lua_chon_sai": [
-          "xà",
-          "xả"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1961,15 +1961,15 @@
       },
       {
         "dap_an": [
-          "mợ",
-          "bí"
+          "bé",
+          "đá"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng mợ đến chợ mua bí tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Buổi sáng, thầy giáo mang bé, đá vào lớp học, học sinh xem bé, đá thật chăm chú, lớp học vui nhộn trong buổi học.",
         "id": "DVAN3-066",
         "lua_chon_sai": [
-          "xẻ",
-          "xó"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [
@@ -1980,15 +1980,15 @@
       },
       {
         "dap_an": [
-          "mợ",
-          "su"
+          "cô",
+          "đá"
         ],
         "do_dai_ky_tu": 73,
-        "doan": "Buổi sáng mợ đến chợ mua su tươi ngon đem nấu bữa trưa cho gia đình mình.",
+        "doan": "Chiều mưa, cháu nhỏ đứng bên cửa lớn, cháu nhỏ nhìn cô, đá ngoài hiên nhà, cháu nhỏ nói chuyện cho bạn học nghe.",
         "id": "DVAN3-067",
         "lua_chon_sai": [
-          "xổ",
-          "xu"
+          "gà",
+          "tô"
         ],
         "so_tu": 17,
         "tu_doc_duoc": [

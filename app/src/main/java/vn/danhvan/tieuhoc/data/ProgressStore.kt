@@ -17,6 +17,8 @@ class ProgressStore(context: Context) {
         prefs.edit().putBoolean("passed_$stage", true).apply()
     }
 
+    fun allPassed(): Boolean = (1..7).all { isPassed(it) }
+
     fun isUnlocked(stage: Int): Boolean {
         if (UnlockRules.UNLOCK_ALL) return true
         if (stage <= 1) return true
@@ -44,9 +46,35 @@ class ProgressStore(context: Context) {
  * - Câu vừa hiện ra là đã tính là dùng rồi, kể cả đúng hay sai.
  * - Chỉ reset khi đã dùng hết toàn bộ ngân hàng của chặng đó, và phải báo
  *   "Đã hết câu mới, bắt đầu vòng mới!" (trả về newCycle = true).
+ * - MỚI 2026-10-29: giữ lịch sử câu hỏi trong 1 lần vào chặng để nút
+ *   "Câu trước" quay lại đúng câu cũ, không phải câu mới. Lịch sử chỉ sống
+ *   trong bộ nhớ của lần vào chặng này, còn luật không lặp vẫn lưu trên máy
+ *   qua ProgressStore nên sang lần thi sau vẫn không trùng câu cũ.
  */
 class NoRepeatPicker(private val store: ProgressStore) {
     data class Pick<T>(val item: T, val newCycle: Boolean)
+
+    // Lịch sử theo chặng, theo thứ tự câu đã hiện trong lần vào chặng này.
+    private val history = mutableMapOf<Int, MutableList<Any>>()
+    private val historyNewCycle = mutableMapOf<Int, MutableList<Boolean>>()
+
+    fun historySize(stage: Int): Int = history[stage]?.size ?: 0
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> pickAt(stage: Int, index: Int, pool: List<T>, idOf: (T) -> String): Pick<T>? {
+        if (pool.isEmpty()) return null
+        val list = history.getOrPut(stage) { mutableListOf() }
+        val cycles = historyNewCycle.getOrPut(stage) { mutableListOf() }
+        if (index < list.size) {
+            return Pick(list[index] as T, cycles[index])
+        }
+        // Chỉ tạo câu mới khi index đúng bằng cuối lịch sử. Nếu nhảy cóc
+        // thì coi như câu mới tiếp theo, tránh tạo lỗ hổng trong lịch sử.
+        val picked = pick(stage, pool, idOf) ?: return null
+        list.add(picked.item as Any)
+        cycles.add(picked.newCycle)
+        return picked
+    }
 
     fun <T> pick(stage: Int, pool: List<T>, idOf: (T) -> String): Pick<T>? {
         if (pool.isEmpty()) return null
@@ -62,5 +90,11 @@ class NoRepeatPicker(private val store: ProgressStore) {
         val item = pool.random()
         store.markUsed(stage, idOf(item))
         return Pick(item, true)
+    }
+
+    /** Xóa lịch sử trong bộ nhớ khi rời chặng, để lần vào sau bắt đầu mới. */
+    fun clearHistory(stage: Int) {
+        history.remove(stage)
+        historyNewCycle.remove(stage)
     }
 }

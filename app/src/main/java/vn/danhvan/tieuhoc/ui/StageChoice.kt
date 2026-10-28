@@ -1,6 +1,5 @@
 package vn.danhvan.tieuhoc.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,16 +21,23 @@ import vn.danhvan.tieuhoc.audio.VietnameseTts
 import vn.danhvan.tieuhoc.data.NoRepeatPicker
 import vn.danhvan.tieuhoc.data.WordBank
 
-/** Chặng 1: Nghe chọn đúng từ. Giọng đọc tiếng Việt, bé chọn đúng từ trong các lựa chọn. */
+/**
+ * SỬA 2026-10-29: 4 đáp án thành 2 HÀNG (2x2), hình nhỏ lại để vừa 1 màn hình,
+ * chọn đáp án xong là dừng đọc luôn (StageScreen.answer đã tts.stop, ở đây
+ * cũng stop trước khi chấm để giọng không đọc chồng).
+ * Câu trước: chỉ xem lại, nút đáp án tắt, hiện đáp án đúng, không chấm lại.
+ */
 @Composable
 fun Stage1Content(
     tts: VietnameseTts,
     picker: NoRepeatPicker,
+    questionIndex: Int,
+    reviewOnly: Boolean,
     onAnswer: (Boolean, String) -> Unit,
     onNewCycle: () -> Unit,
 ) {
     val pick = remember {
-        picker.pick(1, WordBank.words) { it.id }
+        picker.pickAt(1, questionIndex, WordBank.words) { it.id }
     }
     LaunchedEffect(pick?.newCycle) { if (pick?.newCycle == true) onNewCycle() }
     val word = pick?.item
@@ -39,45 +45,48 @@ fun Stage1Content(
         Text("Chưa có từ nào.", fontSize = 24.sp)
         return
     }
-    LaunchedEffect(word.id) { tts.speak(word.phatAm) }
+    if (!reviewOnly) {
+        LaunchedEffect(word.id) { tts.speak(word.phatAm) }
+    }
     var answered by remember { mutableStateOf(false) }
     val options = remember(word.id) {
         shuffledOptions(word.tu, distractWords(word.tu, WordBank.words.map { it.tu }))
     }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("Nghe rồi chọn đúng từ nhé!", fontSize = 26.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(16.dp))
+        Text("Nghe rồi chọn đúng từ nhé!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(10.dp))
         SpeakButton(textToSpeak = word.phatAm, tts = tts)
-        Spacer(modifier = Modifier.height(20.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            for (opt in options) {
-                BigButton(
-                    text = opt,
-                    onClick = {
-                        if (!answered) {
-                            answered = true
-                            onAnswer(opt == word.tu, word.tu)
-                        }
-                    },
-                    enabled = !answered,
-                    color = KidBlue,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
+        Spacer(modifier = Modifier.height(12.dp))
+        AnswerGrid2x2(
+            options = options,
+            enabled = !answered && !reviewOnly,
+            onPick = { opt ->
+                if (!answered && !reviewOnly) {
+                    answered = true
+                    tts.stop()
+                    onAnswer(opt == word.tu, word.tu)
+                }
+            },
+        )
+        if (reviewOnly) {
+            Spacer(modifier = Modifier.height(10.dp))
+            Text("Đáp án đúng là: ${word.tu}", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = KidGreen)
         }
     }
 }
 
-/** Chặng 2: Hình chọn đúng từ. Chỉ dùng từ có hình, hiện hình, bé chọn đúng từ. */
+/** Chặng 2: Hình chọn đúng từ. Chỉ dùng từ có hình, hình nhỏ lại vừa màn hình. */
 @Composable
 fun Stage2Content(
     tts: VietnameseTts,
     picker: NoRepeatPicker,
+    questionIndex: Int,
+    reviewOnly: Boolean,
     onAnswer: (Boolean, String) -> Unit,
     onNewCycle: () -> Unit,
 ) {
     val pick = remember {
-        picker.pick(2, WordBank.pictureWords) { it.id }
+        picker.pickAt(2, questionIndex, WordBank.pictureWords) { it.id }
     }
     LaunchedEffect(pick?.newCycle) { if (pick?.newCycle == true) onNewCycle() }
     val word = pick?.item
@@ -90,41 +99,40 @@ fun Stage2Content(
         shuffledOptions(word.tu, distractWords(word.tu, WordBank.pictureWords.map { it.tu }))
     }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("Nhìn hình rồi chọn đúng từ nhé!", fontSize = 26.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(16.dp))
-        // Không hiện nghĩa bằng chữ ở đây, vì với nhiều từ nghĩa chính là từ đó,
-        // hiện ra sẽ lộ đáp án. Bé chỉ nhìn hình để chọn từ.
-        WordImage(wordId = word.id, modifier = Modifier.size(280.dp))
-        Spacer(modifier = Modifier.height(16.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            for (opt in options) {
-                BigButton(
-                    text = opt,
-                    onClick = {
-                        if (!answered) {
-                            answered = true
-                            onAnswer(opt == word.tu, word.tu)
-                        }
-                    },
-                    enabled = !answered,
-                    color = KidBlue,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
+        Text("Nhìn hình rồi chọn đúng từ nhé!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(10.dp))
+        WordImage(wordId = word.id, modifier = Modifier.size(200.dp))
+        Spacer(modifier = Modifier.height(10.dp))
+        AnswerGrid2x2(
+            options = options,
+            enabled = !answered && !reviewOnly,
+            onPick = { opt ->
+                if (!answered && !reviewOnly) {
+                    answered = true
+                    tts.stop()
+                    onAnswer(opt == word.tu, word.tu)
+                }
+            },
+        )
+        if (reviewOnly) {
+            Spacer(modifier = Modifier.height(10.dp))
+            Text("Đáp án đúng là: ${word.tu}", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = KidGreen)
         }
     }
 }
 
-/** Chặng 6: Nghe câu 3 từ, chọn đoạn chữ đúng. Câu gây nhiễu đổi chủ ngữ / tân ngữ / động từ. */
+/** Chặng 6: Nghe câu 3 từ, chọn đoạn chữ đúng. 4 đáp án thành 2 hàng. */
 @Composable
 fun Stage6Content(
     tts: VietnameseTts,
     picker: NoRepeatPicker,
+    questionIndex: Int,
+    reviewOnly: Boolean,
     onAnswer: (Boolean, String) -> Unit,
     onNewCycle: () -> Unit,
 ) {
     val pick = remember {
-        picker.pick(6, WordBank.sentences) { it.id }
+        picker.pickAt(6, questionIndex, WordBank.sentences) { it.id }
     }
     LaunchedEffect(pick?.newCycle) { if (pick?.newCycle == true) onNewCycle() }
     val sentence = pick?.item
@@ -132,29 +140,30 @@ fun Stage6Content(
         Text("Chưa có câu nào.", fontSize = 24.sp)
         return
     }
-    LaunchedEffect(sentence.id) { tts.speak(sentence.cauDung) }
+    if (!reviewOnly) {
+        LaunchedEffect(sentence.id) { tts.speak(sentence.cauDung) }
+    }
     var answered by remember { mutableStateOf(false) }
     val options = remember(sentence.id) { sentence.dapAnNhieu.shuffled() }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("Nghe câu rồi chọn đoạn chữ đúng nhé!", fontSize = 26.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(16.dp))
+        Text("Nghe câu rồi chọn đoạn chữ đúng nhé!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(10.dp))
         SpeakButton(textToSpeak = sentence.cauDung, tts = tts)
-        Spacer(modifier = Modifier.height(20.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            for (opt in options) {
-                BigButton(
-                    text = opt,
-                    onClick = {
-                        if (!answered) {
-                            answered = true
-                            onAnswer(opt == sentence.cauDung, sentence.cauDung)
-                        }
-                    },
-                    enabled = !answered,
-                    color = KidBlue,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
+        Spacer(modifier = Modifier.height(12.dp))
+        AnswerGrid2x2(
+            options = options,
+            enabled = !answered && !reviewOnly,
+            onPick = { opt ->
+                if (!answered && !reviewOnly) {
+                    answered = true
+                    tts.stop()
+                    onAnswer(opt == sentence.cauDung, sentence.cauDung)
+                }
+            },
+        )
+        if (reviewOnly) {
+            Spacer(modifier = Modifier.height(10.dp))
+            Text("Đáp án đúng là: ${sentence.cauDung}", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = KidGreen)
         }
     }
 }
