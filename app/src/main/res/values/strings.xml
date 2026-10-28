@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tên app chưa chốt chính thức, đây là tên tạm hiển thị. -->
+    <string name="app_name">Đánh Vần</string>
+</resources>
