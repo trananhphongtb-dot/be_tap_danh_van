@@ -1,13 +1,22 @@
 package vn.danhvan.tieuhoc.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -72,14 +81,18 @@ fun StageScreen(
     val canPrev = qIndex > 0
 
     fun answer(correct: Boolean, correctText: String) {
-        if (isReview || qIndex in answeredIndices) return
+        // Phần 5 rơi liên tục: mỗi lượt là 1 lần chấm riêng, KHÔNG dùng
+        // qIndex/answeredIndices như các phần khác. Lỗi cũ ở đây: qIndex
+        // của phần 5 không bao giờ tăng, nên sau câu đầu mọi lần chạm sau
+        // đều bị chặn, điểm không cộng nữa, mãi không qua bài.
+        if (stage != 5 && (isReview || qIndex in answeredIndices)) return
         if (completed) return
         tts.stop()
         if (correct) sounds.playCorrect() else sounds.playWrong()
         val (newScore, newWrong) = GameRules.applyAnswer(score, wrongCount, correct)
         score = newScore
         wrongCount = newWrong
-        answeredIndices = answeredIndices + qIndex
+        if (stage != 5) answeredIndices = answeredIndices + qIndex
         lastCorrect = correct
         if (newScore >= GameRules.POINTS_TO_PASS) {
             store.markPassed(stage)
@@ -105,7 +118,7 @@ fun StageScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         StageBackgroundFull(stage)
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            ScoreHeader(stageName = "Chặng $stage", score = score, onBack = {
+            ScoreHeader(stageName = "Phần $stage", score = score, onBack = {
                 tts.stop()
                 onBack()
             })
@@ -150,47 +163,58 @@ fun StageScreen(
 
     if (completed) {
         val allDone = store.allPassed()
-        if (allDone) {
-            AlertDialog(
-                onDismissRequest = {},
-                title = { Text("🎆🎇 Chúc mừng bé! 🎇🎆", fontWeight = FontWeight.Black) },
-                text = {
+        // Hộp thông báo đồ họa, không dùng hộp hệ thống nhỏ nữa.
+        Box(
+            modifier = Modifier.fillMaxSize().background(Color(0x80000000)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(0.88f)
+                    .shadow(12.dp, RoundedCornerShape(28.dp)).clip(RoundedCornerShape(28.dp))
+                    .background(Color(0xFFFFF8E1)).border(4.dp, Color(0xFFFFB300), RoundedCornerShape(28.dp))
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                if (allDone) {
+                    Text("🎆", fontSize = 64.sp)
+                    Text("Chúc mừng bé!", fontSize = 32.sp, fontWeight = FontWeight.Black, textAlign = TextAlign.Center)
+                    Spacer(modifier = Modifier.height(10.dp))
                     Text(
-                        "Bé đã hoàn thành hết 7 chặng! Pháo hoa chúc mừng bé, " +
-                            "giờ bé quay về màn hình chính chơi lại nhé!",
-                        fontSize = 22.sp,
+                        "Bé đã hoàn thành hết 7 phần! Giờ bé quay về màn hình chính chơi lại nhé!",
+                        fontSize = 22.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center,
                     )
-                },
-                confirmButton = {
-                    TextButton(onClick = {
-                        tts.stop()
-                        onBack()
-                    }) { Text("🎆 Về màn hình chính", fontWeight = FontWeight.Bold) }
-                },
-            )
-        } else {
-            AlertDialog(
-                onDismissRequest = {},
-                title = { Text("Hoàn thành chặng $stage! 🎉", fontWeight = FontWeight.Black) },
-                text = { Text("Bé đã đủ 10 điểm. Chặng tiếp theo đã mở (nếu có).") },
-                confirmButton = {
-                    TextButton(onClick = {
-                        tts.stop()
-                        if (stage < 7) onNextStage() else onBack()
-                    }) {
-                        Text(
-                            if (stage < 7) "Chặng tiếp theo →" else "Về màn hình chính",
-                            fontWeight = FontWeight.Bold,
+                    Spacer(modifier = Modifier.height(20.dp))
+                    BigButton(
+                        text = "🏠 Về nhà",
+                        onClick = { tts.stop(); onBack() },
+                        color = KidBlue, modifier = Modifier.fillMaxWidth(),
+                    )
+                } else {
+                    Text("🏆", fontSize = 64.sp)
+                    Text("Hoàn thành Phần $stage!", fontSize = 30.sp, fontWeight = FontWeight.Black, textAlign = TextAlign.Center)
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        "Bé đã đủ 10 điểm. Phần tiếp theo đã mở!",
+                        fontSize = 22.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center,
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                        BigButton(
+                            text = "🏠 Về nhà",
+                            onClick = { tts.stop(); onBack() },
+                            color = Color(0xFF757575), modifier = Modifier.weight(1f),
+                        )
+                        BigButton(
+                            text = if (stage < 7) "Chơi tiếp →" else "🏠 Về nhà",
+                            onClick = {
+                                tts.stop()
+                                if (stage < 7) onNextStage() else onBack()
+                            },
+                            color = KidGreen, modifier = Modifier.weight(1f),
                         )
                     }
-                },
-                dismissButton = {
-                    TextButton(onClick = {
-                        tts.stop()
-                        onBack()
-                    }) { Text("Về màn hình chính") }
-                },
-            )
+                }
+            }
         }
     }
 }

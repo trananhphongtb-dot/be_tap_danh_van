@@ -58,10 +58,10 @@ class MainActivity : ComponentActivity() {
                     BackHandler { currentStage = null }
                     val stageName = WordBank.stages
                         .firstOrNull { it.number == stage }?.ten
-                        ?: "Chặng $stage"
+                        ?: "Phần $stage"
                     StageScreen(
                         stage = stage,
-                        stageName = "Chặng $stage: $stageName",
+                        stageName = "Phần $stage: $stageName",
                         tts = tts,
                         sounds = sounds,
                         picker = picker,

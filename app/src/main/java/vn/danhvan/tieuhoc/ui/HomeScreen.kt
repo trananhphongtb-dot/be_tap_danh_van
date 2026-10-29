@@ -54,26 +54,26 @@ import kotlin.math.roundToInt
  * - Giọng đọc câu dẫn vẫn đọc khi mở app, bảng luật vẫn là bảng gỗ lớn.
  */
 val StageRules = mapOf(
-    1 to "Nghe giọng đọc, chọn đúng từ đó.",
-    2 to "Nhìn hình, chọn đúng từ ứng với hình.",
-    3 to "Nghe đoạn văn, tìm 2 từ bé đọc được, chọn đáp án có đúng 2 từ đó.",
-    4 to "Nghe từ, xếp chữ và dấu thành từ đó, rồi bấm nút tích.",
-    5 to "Nghe từ, chạm vào từ đang rơi đúng với từ vừa nghe.",
-    6 to "Nghe câu 3 từ, chọn đúng đoạn chữ đó.",
-    7 to "Nhìn hình, tự xếp chữ và dấu thành từ ứng với hình, rồi bấm nút tích.",
+    1 to "Bé hãy nghe giọng đọc, chọn đúng từ đó.",
+    2 to "Bé hãy nhìn hình, chọn đúng từ ứng với hình.",
+    3 to "Bé hãy nghe đoạn văn, tìm 2 từ bé đọc được, chọn đáp án có đúng 2 từ đó.",
+    4 to "Bé hãy nghe từ, xếp chữ và dấu thành từ đó, rồi bấm nút tích.",
+    5 to "Bé hãy nghe từ, chạm vào từ đang rơi đúng với từ vừa nghe.",
+    6 to "Bé hãy nghe câu 3 từ, chọn đúng đoạn chữ đó.",
+    7 to "Bé hãy nhìn hình, tự xếp chữ và dấu thành từ ứng với hình, rồi bấm nút tích.",
 )
 
 private val HomeIntro = "Bé ơi, hãy giúp bạn thỏ vượt chướng ngại vật giành được cà rốt nào!"
 
 // Tâm các số trong ảnh Gemini, theo tỉ lệ màn hình (đo từ ảnh gốc).
 private val HomeNodeFracs = listOf(
-    0.16f to 0.245f,
-    0.52f to 0.27f,
-    0.88f to 0.34f,
-    0.76f to 0.50f,
-    0.50f to 0.64f,
-    0.24f to 0.80f,
-    0.82f to 0.88f,
+    0.147f to 0.235f,
+    0.52f to 0.262f,
+    0.879f to 0.31f,
+    0.765f to 0.49f,
+    0.47f to 0.667f,
+    0.265f to 0.812f,
+    0.83f to 0.885f,
 )
 
 @Composable
@@ -151,7 +151,7 @@ fun HomeScreen(
                             if (unlocked) {
                                 selectedStage = stage
                             } else {
-                                lockedMessage = "Chặng ${stage.number} đang khóa. Bé qua chặng trước đã nhé!"
+                                lockedMessage = "Phần ${stage.number} đang khóa. Bé qua phần trước đã nhé!"
                             }
                         },
                     contentAlignment = Alignment.Center,
@@ -186,7 +186,7 @@ fun HomeScreen(
     val picked = selectedStage
     if (picked != null) {
         val rule = StageRules[picked.number] ?: picked.moTa
-        LaunchedEffect(picked.number) { tts.speak(rule) }
+        LaunchedEffect(picked.number) { tts.speak("Phần ${picked.number}. $rule") }
         Box(
             modifier = Modifier.fillMaxSize().background(Color(0x80000000))
                 .clickable { tts.stop(); selectedStage = null },
@@ -198,7 +198,7 @@ fun HomeScreen(
                     .background(Color(0xFFF5E6C8)).border(3.dp, Color(0xFF8D6E63), RoundedCornerShape(24.dp))
                     .padding(20.dp),
             ) {
-                Text("Chặng ${picked.number}", fontSize = 32.sp, fontWeight = FontWeight.Black)
+                Text("Phần ${picked.number}", fontSize = 32.sp, fontWeight = FontWeight.Black)
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(rule, fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(20.dp))
@@ -230,7 +230,7 @@ fun HomeScreen(
                     .shadow(8.dp, RoundedCornerShape(24.dp)).clip(RoundedCornerShape(24.dp))
                     .background(Color.White).padding(20.dp),
             ) {
-                Text("Chặng đang khóa 🔒", fontSize = 24.sp, fontWeight = FontWeight.Black)
+                Text("Phần đang khóa 🔒", fontSize = 24.sp, fontWeight = FontWeight.Black)
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(lockedMessage!!, fontSize = 22.sp)
                 Spacer(modifier = Modifier.height(16.dp))

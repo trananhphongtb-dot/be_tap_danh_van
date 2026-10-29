@@ -225,7 +225,8 @@ fun FeedbackBar(feedback: String?, isCorrect: Boolean?, onNext: () -> Unit) {
 /**
  * Nền toàn màn mỗi chặng, DÙNG ẢNH AI, KHÔNG VẼ BẰNG CODE NỮA (chốt 2026-10-29):
  * 1 vườn thỏ, 2 trang trại bò, 3 vườn gà, 4 vườn ong, 5 ao vịt,
- * 6 nhà mèo, 7 rừng xanh. Ảnh ngang nên cắt giữa cho vừa màn dọc.
+ * 6 nhà mèo, 7 rừng xanh. Ảnh DỌC (2026-10-29) nên vừa màn dọc,
+ * không còn phóng to ảnh ngang gây mờ.
  */
 @Composable
 fun StageBackgroundFull(stage: Int) {
