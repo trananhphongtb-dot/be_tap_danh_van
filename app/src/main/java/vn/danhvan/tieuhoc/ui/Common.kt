@@ -56,14 +56,15 @@ fun BigButton(
     enabled: Boolean = true,
     color: Color = KidBlue,
     modifier: Modifier = Modifier,
+    fontSize: androidx.compose.ui.unit.TextUnit? = null,
 ) {
-    val fontSize = if (text.length > 12) 20.sp else 24.sp
+    val fontSize = fontSize ?: if (text.length > 12) 20.sp else 24.sp
     Button(
         onClick = onClick,
         enabled = enabled,
         modifier = modifier.shadow(6.dp, RoundedCornerShape(18.dp)).height(56.dp),
         shape = RoundedCornerShape(18.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = color),
+        colors = ButtonDefaults.buttonColors(containerColor = color, disabledContainerColor = color, disabledContentColor = Color.White),
         contentPadding = PaddingValues(horizontal = 8.dp),
     ) {
         Text(
@@ -197,18 +198,20 @@ fun PrevNextRow(
         modifier = Modifier.fillMaxWidth(),
     ) {
         BigButton(
-            text = "← Trước",
+            text = "← Phần trước",
             onClick = onPrev,
             enabled = canPrev,
             color = Color(0xFF757575),
             modifier = Modifier.weight(1f),
+            fontSize = 18.sp,
         )
         BigButton(
-            text = "Tiếp →",
+            text = "Phần tiếp →",
             onClick = onNext,
             enabled = canNext,
             color = KidGreen,
             modifier = Modifier.weight(1f),
+            fontSize = 18.sp,
         )
     }
 }

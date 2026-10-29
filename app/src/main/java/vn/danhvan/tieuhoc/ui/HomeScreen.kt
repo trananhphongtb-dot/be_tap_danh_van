@@ -67,12 +67,12 @@ private val HomeIntro = "Bé ơi, hãy giúp bạn thỏ vượt chướng ngạ
 
 // Tâm các số trong ảnh Gemini, theo tỉ lệ màn hình (đo từ ảnh gốc).
 private val HomeNodeFracs = listOf(
-    0.147f to 0.235f,
-    0.52f to 0.262f,
-    0.879f to 0.31f,
-    0.765f to 0.49f,
-    0.47f to 0.667f,
-    0.265f to 0.812f,
+    0.157f to 0.235f,
+    0.53f to 0.252f,
+    0.889f to 0.31f,
+    0.775f to 0.48f,
+    0.48f to 0.667f,
+    0.265f to 0.822f,
     0.83f to 0.885f,
 )
 
@@ -128,7 +128,7 @@ fun HomeScreen(
             val density = LocalDensity.current
             val wPx = with(density) { maxWidth.toPx() }
             val hPx = with(density) { maxHeight.toPx() }
-            val nodeHalfPx = with(density) { 32.dp.toPx() }
+            val nodeHalfPx = with(density) { 44.dp.toPx() }
             for (stage in displayStages) {
                 val idx = stage.number - 1
                 if (idx !in HomeNodeFracs.indices) continue
@@ -144,7 +144,7 @@ fun HomeScreen(
                             val y = (frac.second * hPx - nodeHalfPx).roundToInt()
                             IntOffset(x, y)
                         }
-                        .size(64.dp).shadow(6.dp, CircleShape).clip(CircleShape)
+                        .size(88.dp).shadow(6.dp, CircleShape).clip(CircleShape)
                         .background(if (isWood) Color(0xFF8D6E63) else bg)
                         .border(3.dp, Color.White, CircleShape)
                         .clickable {
@@ -162,7 +162,7 @@ fun HomeScreen(
                     Text(
                         "⭐", fontSize = 16.sp,
                         modifier = Modifier.offset {
-                            val x = (frac.first * wPx + 16.dp.toPx()).roundToInt()
+                            val x = (frac.first * wPx + 30.dp.toPx()).roundToInt()
                             val y = (frac.second * hPx - nodeHalfPx).roundToInt()
                             IntOffset(x, y)
                         },
@@ -172,7 +172,7 @@ fun HomeScreen(
                     Text(
                         "🔒", fontSize = 16.sp,
                         modifier = Modifier.offset {
-                            val x = (frac.first * wPx + 16.dp.toPx()).roundToInt()
+                            val x = (frac.first * wPx + 30.dp.toPx()).roundToInt()
                             val y = (frac.second * hPx - nodeHalfPx).roundToInt()
                             IntOffset(x, y)
                         },
@@ -198,9 +198,7 @@ fun HomeScreen(
                     .background(Color(0xFFF5E6C8)).border(3.dp, Color(0xFF8D6E63), RoundedCornerShape(24.dp))
                     .padding(20.dp),
             ) {
-                Text("Phần ${picked.number}", fontSize = 32.sp, fontWeight = FontWeight.Black)
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(rule, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                Text("Phần ${picked.number}: $rule", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(20.dp))
                 Row {
                     BigButton(
