@@ -49,9 +49,7 @@ private val FallingColors = listOf(
     Color(0xFF43A047),
 )
 
-// 5 làn cố định, cách mép màn để elip không bị cắt.
 private val Lanes = listOf(0.12f, 0.31f, 0.50f, 0.69f, 0.88f)
-
 private const val MaxFalling = 6
 
 private val EllipseShape = GenericShape { size, _ ->
@@ -59,23 +57,20 @@ private val EllipseShape = GenericShape { size, _ ->
 }
 
 /**
- * Phần 5, SỬA V19 2026-10-29 theo phản hồi của anh:
- * - Chỉ 6 chữ cùng lúc (giảm mật độ), tốc độ chậm 0.003 (trước 0.005).
- * - Mỗi lần thả 2 từ ở 2 làn cách nhau ít nhất 1 ô (chỉ số làn chênh
- *   nhau ít nhất 2), cùng tốc độ nên cặp đó rơi cùng nhau, rơi qua đáy
- *   cùng nhau, rồi thả cặp mới thay.
- * - 5 LÀN CỐ ĐỊNH, CÙNG TỐC ĐỘ, elip nhỏ 84x52dp. Chữ trong cùng làn
- *   cách nhau ít nhất 0.12 màn (khoảng 90dp) nên KHÔNG đè nhau, chữ ở
- *   mép cũng không bị cắt, lúc nào cũng nguyên hình elip, chỉ khác màu.
- * - Dòng rơi liên tục, không reset theo lượt. Từ khi chữ đầu tiên chạm
- *   đáy trở đi, luôn giữ đủ 10 chữ đang rơi.
- * - Chữ đầu tiên thả luôn là chữ gây nhiễu, KHÔNG phải đáp án, nên đáp
- *   án không còn luôn rơi trước. Đáp án chọn NGẪU NHIÊN trong các chữ
- *   đang rơi (nửa trên, chưa dùng làm đáp án), không nhất thiết là chữ mới.
- * - Chữ nào bé đã chạm (đúng hoặc sai) thì CẤM rơi lại trong lần vào
- *   phần này. Chỉ chữ chưa chạm mà rơi qua đáy mới được rơi lại.
- * - Chạm đúng +1, chạm nhầm 1 sai (chữ nhầm biến mất), để chữ cần bắt
- *   rơi qua đáy 1 sai, câu mới lại chọn chữ khác đang rơi.
+ * Phần 5, SỬA V20 2026-10-29:
+ * - 6 chữ, tốc độ chậm 0.003, 5 làn, elip 84x52dp, chỉ khác màu.
+ * - Mỗi lần rơi 2 chữ ở 2 làn cách nhau ít nhất 1 ô (chênh nhau ít
+ *   nhất 2 làn). Khi 2 chữ đầu rơi được 1/4 đường (y >= 0.25) thì mới
+ *   rơi 2 chữ tiếp, chứ không thả theo giờ cố định.
+ * - Cặp mới KHÁC vị trí cặp trước: 2 làn của cặp mới không trùng 2 làn
+ *   của cặp vừa rơi trước, và chọn ngẫu nhiên trong các cặp đủ điều
+ *   kiện, nên không còn rơi dồn 1 bên như khi chọn theo thứ tự cố định.
+ * - Đáp án nằm ở 1/2 màn hình phía trên (y < 0.5), chọn ngẫu nhiên
+ *   trong các chữ đang rơi, không nhất thiết là chữ mới.
+ * - Chữ đã chạm (đúng/sai) cấm rơi lại trong lần vào phần này.
+ * - Phản hồi nói "Đúng rồi" / "Sai rồi" ở StageScreen, nên sau khi
+ *   trả lời thì nghỉ 900ms mới đọc từ cần bắt tiếp theo, để câu nói
+ *   không bị cắt ngang.
  */
 @Composable
 fun Stage5Content(
@@ -93,6 +88,9 @@ fun Stage5Content(
     var firstBottomReached by remember { mutableStateOf(false) }
     var reReadDone by remember { mutableStateOf(false) }
     var firstSpawnIds by remember { mutableStateOf<Set<Int>>(emptySet()) }
+    var lastPairLanes by remember { mutableStateOf<Pair<Int, Int>?>(null) }
+    var lastPairIds by remember { mutableStateOf<Set<Int>>(emptySet()) }
+    var lastAnswerMs by remember { mutableStateOf(0L) }
 
     fun spawnWord(lane: Int, used: Set<String>): FallingWord {
         val w = WordBank.words.map { it.tu }
@@ -109,41 +107,59 @@ fun Stage5Content(
         return item
     }
 
+    // Chọn cặp làn: cách nhau ít nhất 1 ô, khác cặp trước, ngẫu nhiên.
+    fun pickPair(list: List<FallingWord>): Pair<Int, Int>? {
+        val eligible = Lanes.indices.filter { li ->
+            val top = list.filter { it.lane == li }.minByOrNull { it.y }
+            top == null || top.y > 0.12f
+        }
+        val allPairs = eligible.flatMap { a ->
+            eligible.filter { b -> b - a >= 2 }.map { b -> a to b }
+        }
+        val diffFromLast = allPairs.filter { (a, b) ->
+            val last = lastPairLanes
+            last == null || (a != last.first && a != last.second && b != last.first && b != last.second)
+        }
+        return (diffFromLast.ifEmpty { allPairs }).randomOrNull()
+    }
+
+    fun spawnPairInto(list: List<FallingWord>): List<FallingWord> {
+        val pair = pickPair(list) ?: return list
+        var out = list
+        for (li in listOf(pair.first, pair.second)) {
+            out = out + spawnWord(li, out.map { it.word }.toSet())
+        }
+        lastPairLanes = pair
+        lastPairIds = out.takeLast(2).map { it.id }.toSet()
+        return out
+    }
+
     fun endQuestion(correct: Boolean, answeredWord: String) {
         val cur = target ?: return
         target = null
         reReadDone = false
         tappedWords = tappedWords + answeredWord
+        lastAnswerMs = System.currentTimeMillis()
         onAnswer(correct, cur)
         falling = falling.filter { it.word != answeredWord }
     }
 
     LaunchedEffect(isCompleted) {
         if (isCompleted) return@LaunchedEffect
-        var lastSpawnMs = 0L
         while (true) {
             val now = System.currentTimeMillis()
-            // Thả từng lần 2 từ ở 2 làn cách nhau ít nhất 1 ô (chênh
-            // nhau ít nhất 2 làn), mỗi 800ms 1 lần, để không đè nhau.
-            // Thưa lúc đầu, đủ 6 thì thôi; sau khi chữ đầu chạm đáy thì
-            // thả ngay khi thiếu để luôn giữ 6.
-            if (falling.size < MaxFalling && (firstBottomReached || now - lastSpawnMs >= 800L)) {
-                val eligibleLanes = Lanes.indices.filter { li ->
-                    val top = falling.filter { it.lane == li }.minByOrNull { it.y }
-                    top == null || top.y > 0.12f
-                }
-                val pair = listOf(0 to 2, 1 to 3, 2 to 4, 0 to 3, 1 to 4, 0 to 4)
-                    .firstOrNull { (a, b) -> a in eligibleLanes && b in eligibleLanes }
-                if (pair != null && falling.size <= MaxFalling - 2) {
-                    lastSpawnMs = now
-                    var list = falling
-                    for (li in listOf(pair.first, pair.second)) {
-                        list = list + spawnWord(li, list.map { it.word }.toSet())
+            // Thả cặp mới khi: chưa có chữ nào, hoặc cặp vừa rơi trước
+            // đã rơi được 1/4 đường, hoặc đã có chữ chạm đáy (để bù đủ 6).
+            val lastPairY = falling.filter { it.id in lastPairIds }.minOfOrNull { it.y } ?: 1.0f
+            if (falling.size < MaxFalling && (falling.isEmpty() || lastPairY >= 0.25f || firstBottomReached)) {
+                if (falling.size <= MaxFalling - 2) {
+                    falling = spawnPairInto(falling)
+                } else {
+                    val eligible = Lanes.indices.firstOrNull { li ->
+                        val top = falling.filter { it.lane == li }.minByOrNull { it.y }
+                        top == null || top.y > 0.12f
                     }
-                    falling = list
-                } else if (eligibleLanes.isNotEmpty() && falling.size < MaxFalling) {
-                    lastSpawnMs = now
-                    falling = falling + spawnWord(eligibleLanes.first(), falling.map { it.word }.toSet())
+                    if (eligible != null) falling = falling + spawnWord(eligible, falling.map { it.word }.toSet())
                 }
             }
             var newList = falling.map { it.copy(y = it.y + it.speed) }
@@ -154,31 +170,28 @@ fun Stage5Content(
                     val cur = target
                     target = null
                     reReadDone = false
+                    lastAnswerMs = now
                     if (cur != null) onAnswer(false, cur)
                 }
                 newList = newList.filter { it.y <= 1.05f }
-                // Thả chữ mới thay ngay để luôn giữ 6, ưu tiên thả cặp
-                // ở 2 làn cách nhau ít nhất 1 ô khi thiếu từ 2 chữ trở lên.
                 while (newList.size < MaxFalling) {
-                    val eligibleLanes = Lanes.indices.filter { li ->
-                        val top = newList.filter { it.lane == li }.minByOrNull { it.y }
-                        top == null || top.y > 0.12f
+                    val before = newList.size
+                    if (newList.size <= MaxFalling - 2) {
+                        newList = spawnPairInto(newList)
+                    } else {
+                        val eligible = Lanes.indices.firstOrNull { li ->
+                            val top = newList.filter { it.lane == li }.minByOrNull { it.y }
+                            top == null || top.y > 0.12f
+                        } ?: break
+                        newList = newList + spawnWord(eligible, newList.map { it.word }.toSet())
                     }
-                    val pair = listOf(0 to 2, 1 to 3, 2 to 4, 0 to 3, 1 to 4, 0 to 4)
-                        .firstOrNull { (a, b) -> a in eligibleLanes && b in eligibleLanes }
-                    if (pair != null && newList.size <= MaxFalling - 2) {
-                        for (li in listOf(pair.first, pair.second)) {
-                            newList = newList + spawnWord(li, newList.map { it.word }.toSet())
-                        }
-                    } else if (eligibleLanes.isNotEmpty()) {
-                        newList = newList + spawnWord(eligibleLanes.first(), newList.map { it.word }.toSet())
-                    } else break
+                    if (newList.size == before) break
                 }
             }
             falling = newList
-            if (target == null) {
+            // Nghỉ 900ms sau khi trả lời để nghe hết "Đúng rồi"/"Sai rồi".
+            if (target == null && now - lastAnswerMs >= 900L) {
                 if (usedTargets.size >= WordBank.words.size) usedTargets = emptySet()
-                // Chữ đầu tiên thả không được làm đáp án của câu đầu.
                 val eligible = newList.filter { it.y < 0.5f && it.word !in usedTargets && it.id !in firstSpawnIds }
                 if (eligible.isNotEmpty()) {
                     val chosen = eligible.random()
@@ -187,7 +200,7 @@ fun Stage5Content(
                     reReadDone = false
                     tts.speak(chosen.word)
                 }
-            } else {
+            } else if (target != null) {
                 val targetItem = newList.firstOrNull { it.word == target }
                 if (targetItem != null && targetItem.y >= 0.5f && !reReadDone) {
                     reReadDone = true

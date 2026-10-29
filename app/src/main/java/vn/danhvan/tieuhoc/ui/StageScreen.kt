@@ -88,7 +88,9 @@ fun StageScreen(
         if (stage != 5 && (isReview || qIndex in answeredIndices)) return
         if (completed) return
         tts.stop()
-        if (correct) sounds.playCorrect() else sounds.playWrong()
+        // V20: bỏ chuông đúng/sai, nói luôn "Đúng rồi" / "Sai rồi".
+        // sounds vẫn được truyền vào nhưng không dùng nữa.
+        if (correct) tts.speak("Đúng rồi") else tts.speak("Sai rồi")
         val (newScore, newWrong) = GameRules.applyAnswer(score, wrongCount, correct)
         score = newScore
         wrongCount = newWrong

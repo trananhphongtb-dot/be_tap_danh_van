@@ -83,7 +83,7 @@ private val StarShape = GenericShape { size, _ ->
     val cx = size.width / 2f
     val cy = size.height / 2f
     val outer = size.width / 2f
-    val inner = outer * 0.45f
+    val inner = outer * 0.65f  // Sao mập V20, cánh dày, trùm hết nút
     var angle = -90.0
     var first = true
     for (i in 0 until 10) {
@@ -155,10 +155,10 @@ fun HomeScreen(
                 if (idx !in HomeNodeFracs.indices) continue
                 val frac = HomeNodeFracs[idx]
                 val unlocked = store.isUnlocked(stage.number)
-                val passed = store.isPassed(stage.number)
-                // V19: nút to gây vướng nên bỏ đĩa màu. Chưa qua: chỉ số
-                // trong suốt đè lên đĩa in trong ảnh. Qua rồi: sao vàng
-                // lớn đè lên đĩa in, số nằm bên trong sao.
+                // V20: bỏ số hoàn toàn, số là số in sẵn trong ảnh.
+                // Đã mở (unlocked): sao mập vàng trùm hết nút, che luôn
+                // ổ khóa in sẵn. Chưa mở: chỉ vùng chạm trong suốt,
+                // không số code, không ổ khóa code, ổ khóa in sẵn đủ biết.
                 Box(
                     modifier = Modifier
                         .offset {
@@ -168,7 +168,7 @@ fun HomeScreen(
                         }
                         .size(88.dp)
                         .then(
-                            if (passed) Modifier.shadow(6.dp, StarShape).clip(StarShape)
+                            if (unlocked) Modifier.shadow(6.dp, StarShape).clip(StarShape)
                                 .background(Color(0xFFFFC107))
                             else Modifier
                         )
@@ -180,26 +180,7 @@ fun HomeScreen(
                             }
                         },
                     contentAlignment = Alignment.Center,
-                ) {
-                    if (passed) {
-                        Text("${stage.number}", fontSize = 32.sp, fontWeight = FontWeight.Black, color = Color(0xFF4E342E))
-                    } else {
-                        Text(
-                            "${stage.number}", fontSize = 36.sp, fontWeight = FontWeight.Black, color = Color.White,
-                            style = TextStyle(shadow = Shadow(color = Color.Black, offset = Offset(3f, 3f), blurRadius = 6f)),
-                        )
-                    }
-                }
-                if (!unlocked) {
-                    Text(
-                        "🔒", fontSize = 16.sp,
-                        modifier = Modifier.offset {
-                            val x = (frac.first * wPx + 30.dp.toPx()).roundToInt()
-                            val y = (frac.second * hPx - nodeHalfPx).roundToInt()
-                            IntOffset(x, y)
-                        },
-                    )
-                }
+                ) {}
             }
         }
     }
