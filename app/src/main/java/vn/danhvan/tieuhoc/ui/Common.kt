@@ -1,6 +1,7 @@
 package vn.danhvan.tieuhoc.ui
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +29,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import vn.danhvan.tieuhoc.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -219,43 +223,27 @@ fun FeedbackBar(feedback: String?, isCorrect: Boolean?, onNext: () -> Unit) {
 }
 
 /**
- * Nền toàn màn mỗi chặng, phong cách đồng cỏ như ảnh Gemini anh gửi:
- * trời xanh trên, đồng cỏ xanh dưới, núi, cây, hoa, và con vật của chặng
- * ở góc dưới, không che nội dung vì nội dung nằm trên tấm trắng / gỗ.
- * Chặng 1 vườn thỏ, 2 trang trại bò, 3 vườn gà, 4 vườn ong, 5 ao vịt,
- * 6 nhà mèo, 7 rừng xanh.
+ * Nền toàn màn mỗi chặng, DÙNG ẢNH AI, KHÔNG VẼ BẰNG CODE NỮA (chốt 2026-10-29):
+ * 1 vườn thỏ, 2 trang trại bò, 3 vườn gà, 4 vườn ong, 5 ao vịt,
+ * 6 nhà mèo, 7 rừng xanh. Ảnh ngang nên cắt giữa cho vừa màn dọc.
  */
 @Composable
 fun StageBackgroundFull(stage: Int) {
-    val animals = when (stage) {
-        1 -> "🐰 🌸"
-        2 -> "🐄 🌿"
-        3 -> "🐔 🌾"
-        4 -> "🐝 🌼"
-        5 -> "🦆 💧"
-        6 -> "🐱 🏠"
-        else -> "🌲 🦊"
+    val res = when (stage) {
+        1 -> R.drawable.nen_chang1
+        2 -> R.drawable.nen_chang2
+        3 -> R.drawable.nen_chang3
+        4 -> R.drawable.nen_chang4
+        5 -> R.drawable.nen_chang5
+        6 -> R.drawable.nen_chang6
+        else -> R.drawable.nen_chang7
     }
-    Box(modifier = Modifier.fillMaxSize()) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            // Trời xanh.
-            drawRect(Color(0xFF87CEEB), Offset(0f, 0f), size)
-            // Đồng cỏ xanh.
-            drawRect(Color(0xFF7BC950), Offset(0f, size.height * 0.55f), size.copy(height = size.height * 0.45f))
-            // Núi.
-            drawRect(Color(0xFF8BC34A), Offset(0f, size.height * 0.45f), size.copy(height = size.height * 0.15f))
-            // Mặt trời.
-            drawCircle(Color(0xFFFFD54F), radius = size.width * 0.08f, center = Offset(size.width * 0.85f, size.height * 0.12f))
-        }
-        Text(
-            animals, fontSize = 48.sp,
-            modifier = Modifier.align(Alignment.BottomStart).padding(16.dp),
-        )
-        Text(
-            "🌳 🌸 🌼", fontSize = 32.sp,
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
-        )
-    }
+    Image(
+        painter = painterResource(res),
+        contentDescription = null,
+        modifier = Modifier.fillMaxSize(),
+        contentScale = ContentScale.Crop,
+    )
 }
 
 /** Giữ lại cho tương thích, StageScreen v13 dùng StageBackgroundFull. */
