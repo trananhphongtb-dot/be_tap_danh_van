@@ -1,10 +1,18 @@
 package vn.danhvan.tieuhoc.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.background
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,10 +61,8 @@ fun Stage1Content(
     val options = remember(word.id) {
         shuffledOptions(word.tu, distractWords(word.tu, WordBank.words.map { it.tu }))
     }
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("Nghe rồi chọn đúng từ nhé!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(10.dp))
-        // Nghe lại nằm sát ngay trên đáp án để bé bấm dễ.
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
+        Spacer(modifier = Modifier.weight(1f))
         SpeakButton(textToSpeak = word.phatAm, tts = tts)
         Spacer(modifier = Modifier.height(12.dp))
         AnswerGrid2x2(
@@ -102,10 +108,11 @@ fun Stage2Content(
     val options = remember(word.id) {
         shuffledOptions(word.tu, distractWords(word.tu, WordBank.pictureWords.map { it.tu }))
     }
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("Nhìn hình rồi chọn đúng từ nhé!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(10.dp))
-        WordImage(wordId = word.id, modifier = Modifier.size(200.dp))
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.shadow(6.dp, RoundedCornerShape(20.dp)).clip(RoundedCornerShape(20.dp)).background(Color.White).padding(8.dp)) {
+            WordImage(wordId = word.id, modifier = Modifier.size(200.dp))
+        }
+        Spacer(modifier = Modifier.weight(1f))
         Spacer(modifier = Modifier.height(10.dp))
         AnswerGrid2x2(
             options = options,
@@ -150,9 +157,8 @@ fun Stage6Content(
     var answered by remember { mutableStateOf(false) }
     var pickedOpt by remember { mutableStateOf<String?>(null) }
     val options = remember(sentence.id) { sentence.dapAnNhieu.shuffled() }
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("Nghe câu rồi chọn đoạn chữ đúng nhé!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(10.dp))
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
+        Spacer(modifier = Modifier.weight(1f))
         SpeakButton(textToSpeak = sentence.cauDung, tts = tts)
         Spacer(modifier = Modifier.height(12.dp))
         AnswerGrid2x2(

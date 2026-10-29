@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -79,11 +81,10 @@ fun Stage3Content(
         }
         pairs.shuffled()
     }
-    Column {
-        Text("Đoạn văn có 2 từ bé đọc được. Bé tìm 2 từ đó nhé!", fontSize = 22.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(10.dp))
+    Column(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier.fillMaxWidth()
+                .shadow(6.dp, RoundedCornerShape(16.dp))
                 .clip(RoundedCornerShape(16.dp))
                 .background(KidBoard)
                 .border(8.dp, KidBoardFrame, RoundedCornerShape(16.dp))
@@ -91,10 +92,7 @@ fun Stage3Content(
         ) {
             Text(passage.doan, fontSize = 24.sp, fontWeight = FontWeight.Medium, color = Color.White)
         }
-        Spacer(modifier = Modifier.height(10.dp))
-        Text("Chọn 1 ô có đúng 2 từ đó:", fontSize = 22.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(8.dp))
-        // Nghe lại nằm sát ngay trên đáp án.
+        Spacer(modifier = Modifier.weight(1f))
         SpeakButton(textToSpeak = speakText, tts = tts)
         Spacer(modifier = Modifier.height(12.dp))
         AnswerGrid2x2(
@@ -194,6 +192,7 @@ fun AssembleBoxes(
     ) {
         Box(
             modifier = Modifier.weight(1f).height(72.dp)
+                .shadow(4.dp, RoundedCornerShape(18.dp))
                 .clip(RoundedCornerShape(18.dp))
                 .background(KidYellow)
                 .border(4.dp, KidOrange, RoundedCornerShape(18.dp))
@@ -205,6 +204,7 @@ fun AssembleBoxes(
         Text("+", fontSize = 32.sp, fontWeight = FontWeight.Black)
         Box(
             modifier = Modifier.weight(1f).height(72.dp)
+                .shadow(4.dp, RoundedCornerShape(18.dp))
                 .clip(RoundedCornerShape(18.dp))
                 .background(KidYellow)
                 .border(4.dp, KidOrange, RoundedCornerShape(18.dp))
@@ -243,7 +243,7 @@ fun AssembleGame(
     var checked by remember { mutableStateOf(false) }
     var wasCorrect by remember { mutableStateOf<Boolean?>(null) }
     val tiles = remember(wordTu) { makeTileSet(wordTu, phuAm, nguyenAmCoDau) }
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
         prompt()
         Spacer(modifier = Modifier.height(10.dp))
         AssembleBoxes(
@@ -254,9 +254,8 @@ fun AssembleGame(
             resultColor = if (checked) (if (wasCorrect == true) KidGreen else KidRed) else null,
         )
         Spacer(modifier = Modifier.height(10.dp))
-        // Nghe lại nằm sát ngay trên các ô chữ để bé bấm dễ (chặng 4).
         speakButton()
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.weight(1f))
         // Hàng 1: 4 ô đầu. Hàng 2: 4 ô sau + nút ✓ ở cuối hàng.
         val row1 = tiles.allTiles.take(4)
         val row2 = tiles.allTiles.drop(4)
@@ -327,16 +326,7 @@ fun AssembleGame(
                 modifier = Modifier.weight(1f),
             )
         }
-        if (reviewOnly || checked) {
-            // Chỉ màu: ô ghép đã xanh lá nếu đúng, đỏ nếu sai, không viết
-            // "Đáp án đúng là". Chặng 7 vẫn đọc đáp án đúng bằng giọng.
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                if (wasCorrect == true) "Đúng rồi! 🎉" else if (checked) "Chưa đúng." else "",
-                fontSize = 24.sp, fontWeight = FontWeight.Bold,
-                color = if (wasCorrect == true) KidGreen else KidRed,
-            )
-        }
+        // CHOT v13: khong hien chu dung/sai, chi mau o ghep + am thanh.
     }
 }
 
@@ -360,9 +350,7 @@ fun Stage4Content(
     if (!reviewOnly) {
         LaunchedEffect(word.id) { tts.speak(word.phatAm) }
     }
-    Column {
-        Text("Nghe rồi ghép chữ thành từ nhé!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(10.dp))
+    Column(modifier = Modifier.fillMaxSize()) {
         AssembleGame(
             tts = tts,
             wordTu = word.tu,
@@ -404,10 +392,10 @@ fun Stage7Content(
         LaunchedEffect(word.id) { tts.speak("Hãy nhìn hình và xếp chữ thành từ") }
     }
     var spokenAnswer by remember { mutableStateOf(false) }
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("Nhìn hình rồi tự xếp chữ nhé!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(10.dp))
-        WordImage(wordId = word.id, modifier = Modifier.size(180.dp))
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.shadow(6.dp, RoundedCornerShape(20.dp)).clip(RoundedCornerShape(20.dp)).background(Color.White).padding(8.dp)) {
+            WordImage(wordId = word.id, modifier = Modifier.size(180.dp))
+        }
         Spacer(modifier = Modifier.height(10.dp))
         AssembleGame(
             tts = tts,

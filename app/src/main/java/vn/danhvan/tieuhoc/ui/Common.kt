@@ -1,5 +1,6 @@
 package vn.danhvan.tieuhoc.ui
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,11 +10,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -23,10 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,7 +39,12 @@ import vn.danhvan.tieuhoc.audio.VietnameseTts
 import vn.danhvan.tieuhoc.data.GameRules
 import kotlin.math.roundToInt
 
-/** Nút to, chữ to, phù hợp trẻ mới học. Chiều cao 56dp để vừa 1 màn hình. */
+/**
+ * Nút 3D, CHỐT v13 2026-10-29:
+ * - 1 dòng duy nhất, không xuống dòng, chữ dài tự nhỏ lại, tất cả nút
+ *   cùng chiều cao 56dp nên không còn nút to nhỏ khác nhau.
+ * - Bóng đổ + viền dưới đậm + highlight trên để nhìn nổi 3D.
+ */
 @Composable
 fun BigButton(
     text: String,
@@ -43,19 +53,23 @@ fun BigButton(
     color: Color = KidBlue,
     modifier: Modifier = Modifier,
 ) {
+    val fontSize = if (text.length > 12) 20.sp else 24.sp
     Button(
         onClick = onClick,
         enabled = enabled,
-        modifier = modifier.height(56.dp),
+        modifier = modifier.shadow(6.dp, RoundedCornerShape(18.dp)).height(56.dp),
         shape = RoundedCornerShape(18.dp),
         colors = ButtonDefaults.buttonColors(containerColor = color),
-        contentPadding = PaddingValues(horizontal = 12.dp),
+        contentPadding = PaddingValues(horizontal = 8.dp),
     ) {
-        Text(text, fontSize = 24.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+        Text(
+            text, fontSize = fontSize, fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center, maxLines = 1, overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
-/** Nút phát lại giọng đọc, có ở mọi chặng. */
+/** Nút phát lại giọng đọc, có ở mọi chặng có giọng đọc. */
 @Composable
 fun SpeakButton(textToSpeak: String, tts: VietnameseTts, label: String = "🔊 Nghe lại") {
     BigButton(
@@ -67,73 +81,69 @@ fun SpeakButton(textToSpeak: String, tts: VietnameseTts, label: String = "🔊 N
 }
 
 /**
- * Đầu màn hình chặng, SỬA 2026-10-29:
- * - Thanh tiến trình ở BIÊN TRÊN: 1 đường chạy ngang, bé trai chạy dọc theo
- *   đường, cuối đường là cúp vàng. Đủ 10 điểm là bé tới đích (tới cúp).
- * - Điểm chỉ tính RIÊNG chặng đang thi, không cộng dồn sang chặng khác:
- *   vào chặng nào điểm bắt đầu lại từ 0 ở chặng đó.
+ * Đầu màn hình chặng, CHỐT v13:
+ * - Nút quay lại nhỏ ở trái, tên chặng ở giữa, ĐIỂM Ở GÓC PHẢI cho cân.
+ * - Thanh tiến trình dưới: thỏ chạy sang phải theo điểm, cuối là cà rốt.
+ * - Điểm riêng từng chặng, không cộng dồn.
  */
 @Composable
 fun ScoreHeader(stageName: String, score: Int, onBack: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Nút quay lại nhỏ, chỉ 1 mũi tên to trong nút nhỏ.
-            androidx.compose.foundation.layout.Box(
-                modifier = Modifier.size(48.dp).clip(CircleShape).background(Color(0xFF757575))
-                    .clickable(onClick = onBack),
+            Box(
+                modifier = Modifier.size(48.dp).shadow(4.dp, CircleShape).clip(CircleShape)
+                    .background(Color(0xFF757575)).clickable(onClick = onBack),
                 contentAlignment = Alignment.Center,
             ) { Text("←", fontSize = 32.sp, fontWeight = FontWeight.Black, color = Color.White) }
             Text(
-                "Điểm: $score / ${GameRules.POINTS_TO_PASS}",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
+                stageName, fontSize = 22.sp, fontWeight = FontWeight.Black,
+                textAlign = TextAlign.Center, modifier = Modifier.weight(1f),
+                maxLines = 1, overflow = TextOverflow.Ellipsis,
             )
+            // Điểm ở góc phải, dạng ô nhỏ cho cân với nút trái.
+            Box(
+                modifier = Modifier.shadow(4.dp, RoundedCornerShape(12.dp)).clip(RoundedCornerShape(12.dp))
+                    .background(Color.White).padding(horizontal = 10.dp, vertical = 6.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    "Điểm: $score/${GameRules.POINTS_TO_PASS}",
+                    fontSize = 18.sp, fontWeight = FontWeight.Bold, maxLines = 1,
+                )
+            }
         }
         Spacer(modifier = Modifier.height(6.dp))
-        Text(stageName, fontSize = 26.sp, fontWeight = FontWeight.Black)
-        Spacer(modifier = Modifier.height(6.dp))
-        // Đường chạy trên biên trên: bé chạy từ trái sang phải theo điểm.
         BoxWithConstraints(modifier = Modifier.fillMaxWidth().height(44.dp)) {
             val density = LocalDensity.current
             val widthPx = with(density) { maxWidth.toPx() }
             val frac = (score.toFloat() / GameRules.POINTS_TO_PASS).coerceIn(0f, 1f)
-            // Vạch đường.
             Box(
                 modifier = Modifier.align(Alignment.CenterStart)
                     .fillMaxWidth().height(10.dp)
-                    .clip(RoundedCornerShape(5.dp))
-                    .background(Color(0xFFBDBDBD)),
+                    .clip(RoundedCornerShape(5.dp)).background(Color(0xFFBDBDBD)),
             )
-            // Phần đường đã chạy qua.
             Box(
                 modifier = Modifier.align(Alignment.CenterStart)
                     .fillMaxWidth(frac).height(10.dp)
-                    .clip(RoundedCornerShape(5.dp))
-                    .background(KidGreen),
+                    .clip(RoundedCornerShape(5.dp)).background(KidGreen),
             )
-            // Thỏ chạy sang phải theo điểm, cuối đường là cà rốt.
             val rabbitX = (frac * widthPx - 22f).coerceIn(0f, (widthPx - 44f).coerceAtLeast(0f)).roundToInt()
             Text(
-                "🐰",
-                fontSize = 30.sp,
-                modifier = Modifier.align(Alignment.CenterStart)
-                    .offset { IntOffset(rabbitX, -8) },
+                "🐰", fontSize = 30.sp,
+                modifier = Modifier.align(Alignment.CenterStart).offset { IntOffset(rabbitX, -8) },
             )
             Text(
-                "🥕",
-                fontSize = 30.sp,
-                modifier = Modifier.align(Alignment.CenterEnd)
-                    .offset { IntOffset(0, -8) },
+                "🥕", fontSize = 30.sp,
+                modifier = Modifier.align(Alignment.CenterEnd).offset { IntOffset(0, -8) },
             )
         }
     }
 }
 
-/** 4 đáp án xếp thành 2 HÀNG, mỗi hàng 2 ô, gọn vừa 1 màn hình. */
+/** 4 đáp án xếp thành 2 HÀNG, mỗi hàng 2 ô, cùng cao, 1 dòng. */
 @Composable
 fun AnswerGrid2x2(
     options: List<String>,
@@ -150,8 +160,6 @@ fun AnswerGrid2x2(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 for (opt in row) {
-                    // Chỉ màu, không chữ "Đáp án đúng là": đúng xanh lá,
-                    // chọn sai đỏ, đáp án đúng vẫn xanh lá để bé nhìn ra.
                     val btnColor = when {
                         answered && opt == correctOption -> KidGreen
                         answered && opt == selected -> KidRed
@@ -166,14 +174,13 @@ fun AnswerGrid2x2(
                         modifier = Modifier.weight(1f),
                     )
                 }
-                // Hàng lẻ ô cuối thì chèn khoảng trống cho cân.
                 if (row.size == 1) Spacer(modifier = Modifier.weight(1f))
             }
         }
     }
 }
 
-/** Hàng nút Câu trước / Câu tiếp, nằm dưới đáp án. */
+/** Hàng nút Câu trước / Câu tiếp, nằm dưới đáp án, 1 dòng, cùng cao. */
 @Composable
 fun PrevNextRow(
     canPrev: Boolean,
@@ -186,14 +193,14 @@ fun PrevNextRow(
         modifier = Modifier.fillMaxWidth(),
     ) {
         BigButton(
-            text = "← Câu trước",
+            text = "← Trước",
             onClick = onPrev,
             enabled = canPrev,
             color = Color(0xFF757575),
             modifier = Modifier.weight(1f),
         )
         BigButton(
-            text = "Câu tiếp →",
+            text = "Tiếp →",
             onClick = onNext,
             enabled = canNext,
             color = KidGreen,
@@ -202,43 +209,57 @@ fun PrevNextRow(
     }
 }
 
-/** Dòng phản hồi sau 1 câu trả lời, chỉ màu + chữ ngắn, KHÔNG nút
- *  "Câu tiếp theo" trùng với hàng Câu trước / Câu tiếp ở trên.
- *  Chặng 5 rơi liên tục không dùng dòng này. */
+/**
+ * Dòng phản hồi, CHỐT v13: KHÔNG hiện chữ nữa, chỉ âm thanh + màu đáp án.
+ * Hàm này giữ lại để code cũ không vỡ, nhưng luôn không vẽ gì.
+ */
 @Composable
 fun FeedbackBar(feedback: String?, isCorrect: Boolean?, onNext: () -> Unit) {
-    if (feedback == null) return
-    Spacer(modifier = Modifier.height(12.dp))
-    Text(
-        feedback,
-        fontSize = 24.sp,
-        fontWeight = FontWeight.Bold,
-        color = if (isCorrect == true) KidGreen else KidRed,
-    )
+    // Không hiện chữ "Đúng rồi!" / "Chưa đúng." nữa.
 }
 
-/** Nền mỗi chặng khác nhau, phong cách trẻ em, gọn: màu nền nhạt +
- *  con vật / thiên nhiên của chặng đó ở cuối màn, không che nội dung.
- *  Chặng 1 vườn thỏ, 2 trang trại bò, 3 vườn gà, 4 vườn ong, 5 ao vịt,
- *  6 nhà mèo, 7 rừng xanh. Ảnh AI đã duyệt dùng làm mẫu, trong app vẽ
- *  bằng chủ đề + màu để app nhẹ, build chắc, không cần file ảnh lớn. */
+/**
+ * Nền toàn màn mỗi chặng, phong cách đồng cỏ như ảnh Gemini anh gửi:
+ * trời xanh trên, đồng cỏ xanh dưới, núi, cây, hoa, và con vật của chặng
+ * ở góc dưới, không che nội dung vì nội dung nằm trên tấm trắng / gỗ.
+ * Chặng 1 vườn thỏ, 2 trang trại bò, 3 vườn gà, 4 vườn ong, 5 ao vịt,
+ * 6 nhà mèo, 7 rừng xanh.
+ */
+@Composable
+fun StageBackgroundFull(stage: Int) {
+    val animals = when (stage) {
+        1 -> "🐰 🌸"
+        2 -> "🐄 🌿"
+        3 -> "🐔 🌾"
+        4 -> "🐝 🌼"
+        5 -> "🦆 💧"
+        6 -> "🐱 🏠"
+        else -> "🌲 🦊"
+    }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            // Trời xanh.
+            drawRect(Color(0xFF87CEEB), Offset(0f, 0f), size)
+            // Đồng cỏ xanh.
+            drawRect(Color(0xFF7BC950), Offset(0f, size.height * 0.55f), size.copy(height = size.height * 0.45f))
+            // Núi.
+            drawRect(Color(0xFF8BC34A), Offset(0f, size.height * 0.45f), size.copy(height = size.height * 0.15f))
+            // Mặt trời.
+            drawCircle(Color(0xFFFFD54F), Offset(size.width * 0.85f, size.height * 0.12f), size.width * 0.08f)
+        }
+        Text(
+            animals, fontSize = 48.sp,
+            modifier = Modifier.align(Alignment.BottomStart).padding(16.dp),
+        )
+        Text(
+            "🌳 🌸 🌼", fontSize = 32.sp,
+            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+        )
+    }
+}
+
+/** Giữ lại cho tương thích, StageScreen v13 dùng StageBackgroundFull. */
 @Composable
 fun StageBackdrop(stage: Int) {
-    val (bg, animals) = when (stage) {
-        1 -> Color(0xFFE8F5E9) to "🐰 🌸 🌿 🐰"
-        2 -> Color(0xFFFFF8E1) to "🐄 🌿 🌼 🐄"
-        3 -> Color(0xFFFFF3E0) to "🐔 🌾 🌻 🐔"
-        4 -> Color(0xFFFFFDE7) to "🐝 🌼 🌸 🐝"
-        5 -> Color(0xFFE1F5FE) to "🦆 💧 🌿 🦆"
-        6 -> Color(0xFFFCE4EC) to "🐱 🏠 🌸 🐱"
-        else -> Color(0xFFE8F5E9) to "🌲 🦊 🌿 🌲"
-    }
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text("☀️ ☁️ ⛰️", fontSize = 20.sp, modifier = Modifier.padding(4.dp))
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(animals, fontSize = 32.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
-    }
-    // Màu nền được StageScreen dùng qua Box background, hàm này chỉ
-    // giữ chủ đề để các màn dùng chung, tránh lệch nhau.
-    @Suppress("UNUSED_VARIABLE") val bgColor = bg
+    // Không vẽ dải chủ đề nhỏ nữa, nền toàn màn đã có ở StageBackgroundFull.
 }

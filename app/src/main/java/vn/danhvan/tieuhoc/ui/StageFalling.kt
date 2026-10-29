@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -150,16 +151,12 @@ fun Stage5Content(
         }
     }
 
-    Column {
-        Text("Nghe rồi chạm vào từ đang rơi đúng nhé!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(10.dp))
-        // Nghe lại nằm sát ngay trên sân rơi.
+    // CHOT v13: khong khung, tu roi ngay tren nen toan man.
+    Column(modifier = Modifier.fillMaxSize()) {
         SpeakButton(textToSpeak = target, tts = tts)
         Spacer(modifier = Modifier.height(10.dp))
         BoxWithConstraints(
-            modifier = Modifier.fillMaxWidth().height(420.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(KidCream),
+            modifier = Modifier.fillMaxWidth().weight(1f),
         ) {
             val density = LocalDensity.current
             val widthPx = with(density) { maxWidth.toPx() }
@@ -192,7 +189,5 @@ fun Stage5Content(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("Mỗi lúc chỉ rơi 1 từ, ở trái, giữa hoặc phải. Từ đúng thì chạm, từ sai thì để rơi qua.", fontSize = 20.sp)
     }
 }
