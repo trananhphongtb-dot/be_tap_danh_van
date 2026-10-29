@@ -122,7 +122,7 @@ fun HomeScreen(
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawRect(Color(0xFF87CEEB), Offset(0f, 0f), size)
             drawRect(Color(0xFF7BC950), Offset(0f, size.height * 0.45f), size.copy(height = size.height * 0.55f))
-            drawCircle(Color(0xFFFFD54F), Offset(size.width * 0.85f, size.height * 0.10f), size.width * 0.08f)
+            drawCircle(Color(0xFFFFD54F), radius = size.width * 0.08f, center = Offset(size.width * 0.85f, size.height * 0.10f))
         }
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             // Bảng gỗ câu dẫn.

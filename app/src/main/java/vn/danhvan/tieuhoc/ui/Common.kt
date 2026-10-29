@@ -245,7 +245,7 @@ fun StageBackgroundFull(stage: Int) {
             // Núi.
             drawRect(Color(0xFF8BC34A), Offset(0f, size.height * 0.45f), size.copy(height = size.height * 0.15f))
             // Mặt trời.
-            drawCircle(Color(0xFFFFD54F), Offset(size.width * 0.85f, size.height * 0.12f), size.width * 0.08f)
+            drawCircle(Color(0xFFFFD54F), radius = size.width * 0.08f, center = Offset(size.width * 0.85f, size.height * 0.12f))
         }
         Text(
             animals, fontSize = 48.sp,
