@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,34 +36,42 @@ import vn.danhvan.tieuhoc.data.NoRepeatPicker
 import vn.danhvan.tieuhoc.data.WordBank
 import kotlin.math.roundToInt
 
+private enum class FallShape { SQUARE, CIRCLE, TRIANGLE }
+
 private data class FallingWord(
     val word: String,
     val xFrac: Float,
     val speed: Float,
     val y: Float,
     val color: Color,
+    val shape: FallShape,
 )
 
+// Màu theo góp ý: xanh dương, đỏ, tím, vàng, thêm xanh lá cho đa dạng.
 private val FallingColors = listOf(
-    Color(0xFFE53935), Color(0xFF1E88E5), Color(0xFF43A047), Color(0xFFFF8F00),
-    Color(0xFF8E24AA), Color(0xFF00897B), Color(0xFFD81B60), Color(0xFF3949AB),
+    Color(0xFF1E88E5), Color(0xFFE53935), Color(0xFF8E24AA), Color(0xFFFFB300),
+    Color(0xFF43A047),
 )
+
+private val TriangleShape = GenericShape { size, _ ->
+    moveTo(size.width / 2f, 0f)
+    lineTo(size.width, size.height)
+    lineTo(0f, size.height)
+    close()
+}
 
 /**
- * Chặng 5, SỬA LỚN 2026-10-29: BẮT CHỮ RƠI -> TỪ RƠI.
- * - Rơi là TỪ 2 chữ cái, không phải 1 chữ cái nữa.
- * - Từ rơi TỪ ĐỈNH CAO xuống, LẺ TẺ: không rơi hàng loạt 1 lúc nữa, mà
- *   cứ khoảng 1 giây lại thả thêm 1 từ ở vị trí ngang ngẫu nhiên, từ trước
- *   vẫn đang rơi, từ sau mới bắt đầu rơi.
- * - Mỗi từ 1 MÀU KHÁC NHAU cho phong phú, màu không lộ từ cần bắt vì
- *   từ cần bắt cũng chỉ là 1 trong các màu đó.
- * - Rơi LIÊN TỤC, không dừng, không sang màn mới khi chọn xong: bấm đúng
- *   hay sai đều đọc TỪ MỚI ngay, màn rơi vẫn ở đó, rơi tiếp như cũ, chỉ
- *   dừng hẳn khi đủ 10 điểm (hộp hoàn thành hiện lên).
- * - Từ cần bắt rơi được NỬA ĐƯỜNG mà bé chưa chọn được thì ĐỌC LẠI 1 lần.
- * - Từ cần bắt rơi qua khỏi màn hình mà chưa bắt được thì tính là 1 câu sai.
- * - Từ gây nhiễu rơi qua khỏi màn hình thì chỉ biến mất, không tính sai.
- * - Chặng này KHÔNG có câu trước/câu tiếp, vì nó là màn rơi liên tục.
+ * Chặng 5, CHỐT 2026-10-29 sau khi anh duyệt đường v9:
+ * - Mỗi lúc chỉ rơi 1 TỪ, không rơi nhiều từ cùng lúc, không rơi lẻ tẻ
+ *   chồng nhau như trước.
+ * - Từ rơi từ 1 trong 3 vị trí ngẫu nhiên trên đỉnh: trái / giữa / phải.
+ * - Từ nằm trong hình đa dạng: vuông, tròn, tam giác, màu đa dạng:
+ *   xanh dương, đỏ, tím, vàng (thêm xanh lá).
+ * - Cách chơi: nghe từ, từ rơi xuống, nếu là từ cần bắt thì chạm vào,
+ *   nếu là từ gây nhiễu thì để nó rơi qua, từ mới sẽ rơi tiếp.
+ *   Từ cần bắt rơi qua khỏi màn hình mà chưa bắt được thì tính 1 câu sai.
+ *   Từ cần bắt rơi nửa đường mà chưa chọn được thì đọc lại 1 lần.
+ * - Rơi liên tục, không dừng, chỉ dừng hẳn khi đủ 10 điểm.
  */
 @Composable
 fun Stage5Content(
@@ -70,8 +80,6 @@ fun Stage5Content(
     onAnswer: (Boolean, String) -> Unit,
     onNewCycle: () -> Unit,
 ) {
-    // Lượt rơi trong màn: mỗi lượt là 1 từ cần bắt, không dùng lịch sử
-    // câu trước/câu tiếp của các chặng khác, vì màn rơi không rời màn.
     var cycle by remember { mutableIntStateOf(0) }
     val pick = remember(cycle) {
         picker.pick(5, WordBank.words) { it.id }
@@ -83,17 +91,9 @@ fun Stage5Content(
         return
     }
     val target = targetWord.tu
-    // Đọc từ mới khi bắt đầu lượt. Lượt sau đọc từ mới, không đọc từ cũ.
     LaunchedEffect(cycle, target) { tts.speak(target) }
     var answered by remember(cycle) { mutableStateOf(false) }
-    var reReadDone by remember(cycle) { mutableStateOf(false) }
-    // Danh sách từ sẽ thả lẻ tẻ trong lượt này: từ cần bắt + 5 từ gây nhiễu,
-    // thứ tự xáo trộn, thả dần chứ không thả cùng lúc.
-    val spawnList = remember(cycle, target) {
-        val distractors = WordBank.words.map { it.tu }.filter { it != target }.shuffled().take(5)
-        (distractors + target).shuffled()
-    }
-    var falling by remember(cycle) { mutableStateOf<List<FallingWord>>(emptyList()) }
+    var falling by remember(cycle) { mutableStateOf<FallingWord?>(null) }
 
     fun nextCycle() {
         if (!answered) {
@@ -102,53 +102,58 @@ fun Stage5Content(
         }
     }
 
-    // Vòng lặp rơi + thả lẻ tẻ: mỗi 50ms đẩy từ xuống, mỗi ~1 giây thả 1 từ mới.
-    // Dùng biến cục bộ trong coroutine cho danh sách và chỉ số thả, tránh đọc
-    // state đã cũ trong vòng lặp; chỉ đẩy kết quả ra state để vẽ.
+    // Vòng lặp 1 từ: thả 1 từ, rơi tới hết, rồi mới thả từ tiếp theo
+    // trong cùng lượt nếu từ đó là gây nhiễu rơi qua.
     LaunchedEffect(cycle) {
-        var current = emptyList<FallingWord>()
-        var spawnIdx = 0
-        var tick = 0
         var reRead = false
         while (true) {
-            delay(50)
-            tick++
-            // Thả lẻ tẻ: cứ 20 nhịp (1 giây) thả thêm 1 từ, ở x ngẫu nhiên.
-            if (spawnIdx < spawnList.size && tick % 20 == 1) {
-                val wordToSpawn = spawnList[spawnIdx]
-                current = current + FallingWord(
-                    word = wordToSpawn,
-                    xFrac = (0.08f + (0.84f * kotlin.random.Random.nextFloat())),
-                    speed = 0.005f + kotlin.random.Random.nextFloat() * 0.003f,
-                    y = -0.12f,
-                    color = FallingColors.random(),
-                )
-                spawnIdx++
+            // Chọn từ rơi: 50% là từ cần bắt, 50% là từ gây nhiễu.
+            val isTarget = kotlin.random.Random.nextBoolean()
+            val wordToDrop = if (isTarget) {
+                target
+            } else {
+                WordBank.words.map { it.tu }.filter { it != target }.random()
             }
-            current = current.map { it.copy(y = it.y + it.speed) }
-            // Từ cần bắt rơi nửa đường mà chưa chọn được thì đọc lại 1 lần.
-            val targetItem = current.firstOrNull { it.word == target }
-            if (targetItem != null && targetItem.y >= 0.5f && !reRead) {
-                reRead = true
-                reReadDone = true
-                tts.speak(target)
+            val slot = listOf(0.18f, 0.50f, 0.82f).random()
+            var item = FallingWord(
+                word = wordToDrop,
+                xFrac = slot,
+                speed = 0.005f + kotlin.random.Random.nextFloat() * 0.003f,
+                y = -0.12f,
+                color = FallingColors.random(),
+                shape = FallShape.values().random(),
+            )
+            var dropped = false
+            while (!dropped) {
+                delay(50)
+                item = item.copy(y = item.y + item.speed)
+                if (item.word == target && item.y >= 0.5f && !reRead) {
+                    reRead = true
+                    tts.speak(target)
+                }
+                if (item.y > 1.05f) {
+                    if (item.word == target) {
+                        onAnswer(false, target)
+                        nextCycle()
+                        dropped = true
+                        break
+                    } else {
+                        // Gây nhiễu rơi qua: chỉ biến mất, thả từ mới.
+                        dropped = true
+                        break
+                    }
+                }
+                falling = item
             }
-            // Từ cần bắt rơi qua khỏi màn hình là hụt = 1 câu sai, sang lượt mới.
-            val missed = current.any { it.word == target && it.y > 1.05f }
-            if (missed) {
-                onAnswer(false, target)
-                nextCycle()
-                break
-            }
-            // Từ gây nhiễu rơi qua khỏi màn hình thì chỉ biến mất.
-            current = current.filter { it.y <= 1.05f }
-            falling = current
+            if (answered) break
+            falling = null
         }
     }
 
     Column {
         Text("Nghe rồi chạm vào từ đang rơi đúng nhé!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(10.dp))
+        // Nghe lại nằm sát ngay trên sân rơi.
         SpeakButton(textToSpeak = target, tts = tts)
         Spacer(modifier = Modifier.height(10.dp))
         BoxWithConstraints(
@@ -159,14 +164,22 @@ fun Stage5Content(
             val density = LocalDensity.current
             val widthPx = with(density) { maxWidth.toPx() }
             val heightPx = with(density) { maxHeight.toPx() }
-            for (item in falling) {
+            // 3 vị trí rơi trên đỉnh, vẽ mờ để bé biết từ sẽ rơi ở đâu.
+            Text("↓        ↓        ↓", fontSize = 20.sp, modifier = Modifier.align(Alignment.TopCenter))
+            val item = falling
+            if (item != null) {
                 val xPx = (item.xFrac * widthPx - 60f).roundToInt()
                 val yPx = (item.y * heightPx).roundToInt()
+                val shapeModifier = when (item.shape) {
+                    FallShape.CIRCLE -> Modifier.clip(CircleShape)
+                    FallShape.TRIANGLE -> Modifier.clip(TriangleShape)
+                    else -> Modifier.clip(RoundedCornerShape(20.dp))
+                }
                 Box(
                     modifier = Modifier
                         .offset { IntOffset(xPx, yPx) }
                         .size(120.dp, 72.dp)
-                        .clip(RoundedCornerShape(20.dp))
+                        .then(shapeModifier)
                         .background(item.color)
                         .clickable(enabled = !answered) {
                             val correct = item.word == target
@@ -180,6 +193,6 @@ fun Stage5Content(
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Từ rơi liên tục, đủ 10 điểm mới dừng.", fontSize = 20.sp)
+        Text("Mỗi lúc chỉ rơi 1 từ, ở trái, giữa hoặc phải. Từ đúng thì chạm, từ sai thì để rơi qua.", fontSize = 20.sp)
     }
 }

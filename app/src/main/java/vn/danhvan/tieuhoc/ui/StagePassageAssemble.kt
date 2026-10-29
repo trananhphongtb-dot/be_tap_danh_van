@@ -62,6 +62,7 @@ fun Stage3Content(
         LaunchedEffect(passage.id) { tts.speak(speakText) }
     }
     var answered by remember { mutableStateOf(false) }
+    var pickedOpt by remember { mutableStateOf<String?>(null) }
     // Mỗi đáp án là 1 cặp 2 từ: cặp đúng + 3 cặp gây nhiễu ghép từ 2 từ sai.
     val options = remember(passage.id) {
         val correctPair = passage.dapAn.joinToString(", ")
@@ -91,25 +92,26 @@ fun Stage3Content(
             Text(passage.doan, fontSize = 24.sp, fontWeight = FontWeight.Medium, color = Color.White)
         }
         Spacer(modifier = Modifier.height(10.dp))
-        SpeakButton(textToSpeak = speakText, tts = tts)
-        Spacer(modifier = Modifier.height(12.dp))
         Text("Chọn 1 ô có đúng 2 từ đó:", fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
+        // Nghe lại nằm sát ngay trên đáp án.
+        SpeakButton(textToSpeak = speakText, tts = tts)
+        Spacer(modifier = Modifier.height(12.dp))
         AnswerGrid2x2(
             options = options,
             enabled = !answered && !reviewOnly,
+            selected = pickedOpt,
+            correctOption = passage.dapAn.joinToString(", "),
+            answered = answered || reviewOnly,
             onPick = { opt ->
                 if (!answered && !reviewOnly) {
                     answered = true
+                    pickedOpt = opt
                     tts.stop()
                     onAnswer(opt == passage.dapAn.joinToString(", "), passage.dapAn.joinToString(", "))
                 }
             },
         )
-        if (reviewOnly) {
-            Spacer(modifier = Modifier.height(10.dp))
-            Text("Đáp án đúng là: ${passage.dapAn.joinToString(", ")}", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = KidGreen)
-        }
     }
 }
 
@@ -178,6 +180,7 @@ fun AssembleBoxes(
     enabled: Boolean = true,
     onClearConsonant: () -> Unit = {},
     onClearVowel: () -> Unit = {},
+    resultColor: Color? = null,
 ) {
     val vowelWithTone = when {
         selVowel == null -> ""
@@ -232,11 +235,13 @@ fun AssembleGame(
     reviewOnly: Boolean,
     onAnswer: (Boolean, String) -> Unit,
     prompt: @Composable () -> Unit,
+    speakButton: @Composable () -> Unit = {},
 ) {
     var selConsonant by remember { mutableStateOf<String?>(null) }
     var selVowel by remember { mutableStateOf<String?>(null) }
     var selTone by remember { mutableStateOf<String?>(null) }
     var checked by remember { mutableStateOf(false) }
+    var wasCorrect by remember { mutableStateOf<Boolean?>(null) }
     val tiles = remember(wordTu) { makeTileSet(wordTu, phuAm, nguyenAmCoDau) }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         prompt()
@@ -246,7 +251,11 @@ fun AssembleGame(
             enabled = !checked && !reviewOnly,
             onClearConsonant = { selConsonant = null },
             onClearVowel = { selVowel = null },
+            resultColor = if (checked) (if (wasCorrect == true) KidGreen else KidRed) else null,
         )
+        Spacer(modifier = Modifier.height(10.dp))
+        // Nghe lại nằm sát ngay trên các ô chữ để bé bấm dễ (chặng 4).
+        speakButton()
         Spacer(modifier = Modifier.height(10.dp))
         // Hàng 1: 4 ô đầu. Hàng 2: 4 ô sau + nút ✓ ở cuối hàng.
         val row1 = tiles.allTiles.take(4)
@@ -309,6 +318,7 @@ fun AssembleGame(
                         }
                         // Từ không dấu: đúng khi không chọn dấu nào. Từ có dấu:
                         // đúng khi dấu chọn đúng. Thiếu phụ âm/nguyên âm là sai.
+                        wasCorrect = assembled == wordTu
                         onAnswer(assembled == wordTu, wordTu)
                     }
                 },
@@ -318,8 +328,14 @@ fun AssembleGame(
             )
         }
         if (reviewOnly || checked) {
+            // Chỉ màu: ô ghép đã xanh lá nếu đúng, đỏ nếu sai, không viết
+            // "Đáp án đúng là". Chặng 7 vẫn đọc đáp án đúng bằng giọng.
             Spacer(modifier = Modifier.height(10.dp))
-            Text("Đáp án đúng là: $wordTu", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = KidGreen)
+            Text(
+                if (wasCorrect == true) "Đúng rồi! 🎉" else if (checked) "Chưa đúng." else "",
+                fontSize = 24.sp, fontWeight = FontWeight.Bold,
+                color = if (wasCorrect == true) KidGreen else KidRed,
+            )
         }
     }
 }
@@ -347,8 +363,6 @@ fun Stage4Content(
     Column {
         Text("Nghe rồi ghép chữ thành từ nhé!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(10.dp))
-        SpeakButton(textToSpeak = word.phatAm, tts = tts)
-        Spacer(modifier = Modifier.height(10.dp))
         AssembleGame(
             tts = tts,
             wordTu = word.tu,
@@ -357,6 +371,7 @@ fun Stage4Content(
             reviewOnly = reviewOnly,
             onAnswer = onAnswer,
             prompt = {},
+            speakButton = { SpeakButton(textToSpeak = word.phatAm, tts = tts) },
         )
     }
 }

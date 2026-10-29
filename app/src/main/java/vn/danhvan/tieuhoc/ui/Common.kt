@@ -1,6 +1,7 @@
 package vn.danhvan.tieuhoc.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -11,7 +12,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -78,7 +81,12 @@ fun ScoreHeader(stageName: String, score: Int, onBack: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            BigButton(text = "← Về", onClick = onBack, color = Color(0xFF757575))
+            // Nút quay lại nhỏ, chỉ 1 mũi tên to trong nút nhỏ.
+            androidx.compose.foundation.layout.Box(
+                modifier = Modifier.size(48.dp).clip(CircleShape).background(Color(0xFF757575))
+                    .clickable(onClick = onBack),
+                contentAlignment = Alignment.Center,
+            ) { Text("←", fontSize = 32.sp, fontWeight = FontWeight.Black, color = Color.White) }
             Text(
                 "Điểm: $score / ${GameRules.POINTS_TO_PASS}",
                 fontSize = 24.sp,
@@ -107,17 +115,16 @@ fun ScoreHeader(stageName: String, score: Int, onBack: () -> Unit) {
                     .clip(RoundedCornerShape(5.dp))
                     .background(KidGreen),
             )
-            // Bé trai chạy: vị trí theo điểm, trừ đi nửa chiều rộng của chữ.
-            val boyX = (frac * widthPx - 22f).coerceIn(0f, (widthPx - 44f).coerceAtLeast(0f)).roundToInt()
+            // Thỏ chạy sang phải theo điểm, cuối đường là cà rốt.
+            val rabbitX = (frac * widthPx - 22f).coerceIn(0f, (widthPx - 44f).coerceAtLeast(0f)).roundToInt()
             Text(
-                "🏃",
+                "🐰",
                 fontSize = 30.sp,
                 modifier = Modifier.align(Alignment.CenterStart)
-                    .offset { IntOffset(boyX, -8) },
+                    .offset { IntOffset(rabbitX, -8) },
             )
-            // Cúp vàng ở cuối đường.
             Text(
-                "🏆",
+                "🥕",
                 fontSize = 30.sp,
                 modifier = Modifier.align(Alignment.CenterEnd)
                     .offset { IntOffset(0, -8) },
@@ -133,6 +140,8 @@ fun AnswerGrid2x2(
     enabled: Boolean,
     onPick: (String) -> Unit,
     selected: String? = null,
+    correctOption: String? = null,
+    answered: Boolean = false,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         for (row in options.chunked(2)) {
@@ -141,11 +150,19 @@ fun AnswerGrid2x2(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 for (opt in row) {
+                    // Chỉ màu, không chữ "Đáp án đúng là": đúng xanh lá,
+                    // chọn sai đỏ, đáp án đúng vẫn xanh lá để bé nhìn ra.
+                    val btnColor = when {
+                        answered && opt == correctOption -> KidGreen
+                        answered && opt == selected -> KidRed
+                        opt == selected -> KidGreen
+                        else -> KidBlue
+                    }
                     BigButton(
                         text = opt,
                         onClick = { onPick(opt) },
                         enabled = enabled,
-                        color = if (opt == selected) KidGreen else KidBlue,
+                        color = btnColor,
                         modifier = Modifier.weight(1f),
                     )
                 }
@@ -185,7 +202,9 @@ fun PrevNextRow(
     }
 }
 
-/** Dòng phản hồi sau 1 câu trả lời. Chặng 5 rơi liên tục không dùng dòng này. */
+/** Dòng phản hồi sau 1 câu trả lời, chỉ màu + chữ ngắn, KHÔNG nút
+ *  "Câu tiếp theo" trùng với hàng Câu trước / Câu tiếp ở trên.
+ *  Chặng 5 rơi liên tục không dùng dòng này. */
 @Composable
 fun FeedbackBar(feedback: String?, isCorrect: Boolean?, onNext: () -> Unit) {
     if (feedback == null) return
@@ -196,6 +215,30 @@ fun FeedbackBar(feedback: String?, isCorrect: Boolean?, onNext: () -> Unit) {
         fontWeight = FontWeight.Bold,
         color = if (isCorrect == true) KidGreen else KidRed,
     )
-    Spacer(modifier = Modifier.height(10.dp))
-    BigButton(text = "Câu tiếp theo →", onClick = onNext, color = KidGreen, modifier = Modifier.fillMaxWidth())
+}
+
+/** Nền mỗi chặng khác nhau, phong cách trẻ em, gọn: màu nền nhạt +
+ *  con vật / thiên nhiên của chặng đó ở cuối màn, không che nội dung.
+ *  Chặng 1 vườn thỏ, 2 trang trại bò, 3 vườn gà, 4 vườn ong, 5 ao vịt,
+ *  6 nhà mèo, 7 rừng xanh. Ảnh AI đã duyệt dùng làm mẫu, trong app vẽ
+ *  bằng chủ đề + màu để app nhẹ, build chắc, không cần file ảnh lớn. */
+@Composable
+fun StageBackdrop(stage: Int) {
+    val (bg, animals) = when (stage) {
+        1 -> Color(0xFFE8F5E9) to "🐰 🌸 🌿 🐰"
+        2 -> Color(0xFFFFF8E1) to "🐄 🌿 🌼 🐄"
+        3 -> Color(0xFFFFF3E0) to "🐔 🌾 🌻 🐔"
+        4 -> Color(0xFFFFFDE7) to "🐝 🌼 🌸 🐝"
+        5 -> Color(0xFFE1F5FE) to "🦆 💧 🌿 🦆"
+        6 -> Color(0xFFFCE4EC) to "🐱 🏠 🌸 🐱"
+        else -> Color(0xFFE8F5E9) to "🌲 🦊 🌿 🌲"
+    }
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text("☀️ ☁️ ⛰️", fontSize = 20.sp, modifier = Modifier.padding(4.dp))
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(animals, fontSize = 32.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+    }
+    // Màu nền được StageScreen dùng qua Box background, hàm này chỉ
+    // giữ chủ đề để các màn dùng chung, tránh lệch nhau.
+    @Suppress("UNUSED_VARIABLE") val bgColor = bg
 }

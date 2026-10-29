@@ -49,29 +49,32 @@ fun Stage1Content(
         LaunchedEffect(word.id) { tts.speak(word.phatAm) }
     }
     var answered by remember { mutableStateOf(false) }
+    var pickedOpt by remember { mutableStateOf<String?>(null) }
     val options = remember(word.id) {
         shuffledOptions(word.tu, distractWords(word.tu, WordBank.words.map { it.tu }))
     }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Nghe rồi chọn đúng từ nhé!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(10.dp))
+        // Nghe lại nằm sát ngay trên đáp án để bé bấm dễ.
         SpeakButton(textToSpeak = word.phatAm, tts = tts)
         Spacer(modifier = Modifier.height(12.dp))
         AnswerGrid2x2(
             options = options,
             enabled = !answered && !reviewOnly,
+            selected = pickedOpt,
+            correctOption = word.tu,
+            answered = answered || reviewOnly,
             onPick = { opt ->
                 if (!answered && !reviewOnly) {
                     answered = true
+                    pickedOpt = opt
                     tts.stop()
                     onAnswer(opt == word.tu, word.tu)
                 }
             },
         )
-        if (reviewOnly) {
-            Spacer(modifier = Modifier.height(10.dp))
-            Text("Đáp án đúng là: ${word.tu}", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = KidGreen)
-        }
+        // Xem lại: đáp án đúng hiện màu xanh lá ở ô đáp án, không viết chữ.
     }
 }
 
@@ -95,6 +98,7 @@ fun Stage2Content(
         return
     }
     var answered by remember { mutableStateOf(false) }
+    var pickedOpt by remember { mutableStateOf<String?>(null) }
     val options = remember(word.id) {
         shuffledOptions(word.tu, distractWords(word.tu, WordBank.pictureWords.map { it.tu }))
     }
@@ -106,18 +110,18 @@ fun Stage2Content(
         AnswerGrid2x2(
             options = options,
             enabled = !answered && !reviewOnly,
+            selected = pickedOpt,
+            correctOption = word.tu,
+            answered = answered || reviewOnly,
             onPick = { opt ->
                 if (!answered && !reviewOnly) {
                     answered = true
+                    pickedOpt = opt
                     tts.stop()
                     onAnswer(opt == word.tu, word.tu)
                 }
             },
         )
-        if (reviewOnly) {
-            Spacer(modifier = Modifier.height(10.dp))
-            Text("Đáp án đúng là: ${word.tu}", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = KidGreen)
-        }
     }
 }
 
@@ -144,6 +148,7 @@ fun Stage6Content(
         LaunchedEffect(sentence.id) { tts.speak(sentence.cauDung) }
     }
     var answered by remember { mutableStateOf(false) }
+    var pickedOpt by remember { mutableStateOf<String?>(null) }
     val options = remember(sentence.id) { sentence.dapAnNhieu.shuffled() }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Nghe câu rồi chọn đoạn chữ đúng nhé!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
@@ -153,17 +158,17 @@ fun Stage6Content(
         AnswerGrid2x2(
             options = options,
             enabled = !answered && !reviewOnly,
+            selected = pickedOpt,
+            correctOption = sentence.cauDung,
+            answered = answered || reviewOnly,
             onPick = { opt ->
                 if (!answered && !reviewOnly) {
                     answered = true
+                    pickedOpt = opt
                     tts.stop()
                     onAnswer(opt == sentence.cauDung, sentence.cauDung)
                 }
             },
         )
-        if (reviewOnly) {
-            Spacer(modifier = Modifier.height(10.dp))
-            Text("Đáp án đúng là: ${sentence.cauDung}", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = KidGreen)
-        }
     }
 }

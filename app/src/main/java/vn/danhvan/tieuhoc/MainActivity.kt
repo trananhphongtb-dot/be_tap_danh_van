@@ -41,6 +41,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             DanhVanTheme {
                 var currentStage by remember { mutableStateOf<Int?>(null) }
+                // Chặng tiếp theo sau khi thi xong: về màn chính và tự mở
+                // bảng luật của chặng đó, không vào thẳng chặng.
+                var autoOpenStage by remember { mutableStateOf<Int?>(null) }
                 val stage = currentStage
                 if (stage == null) {
                     HomeScreen(
@@ -48,6 +51,8 @@ class MainActivity : ComponentActivity() {
                         store = store,
                         tts = tts,
                         onStage = { currentStage = it },
+                        autoOpenStage = autoOpenStage,
+                        onAutoOpenShown = { autoOpenStage = null },
                     )
                 } else {
                     BackHandler { currentStage = null }
@@ -62,7 +67,14 @@ class MainActivity : ComponentActivity() {
                         picker = picker,
                         store = store,
                         onBack = { currentStage = null },
-                        onNextStage = { if (stage < 7) currentStage = stage + 1 },
+                        onNextStage = {
+                            if (stage < 7) {
+                                currentStage = null
+                                autoOpenStage = stage + 1
+                            } else {
+                                currentStage = null
+                            }
+                        },
                     )
                 }
             }

@@ -92,10 +92,12 @@ fun StageScreen(
         answeredIndices = answeredIndices + qIndex
         lastCorrect = correct
         if (!isContinuous) {
+            // Chỉ màu + chữ ngắn, không viết "Đáp án đúng là", đáp án
+            // đúng sẽ hiện màu xanh lá ở ô đáp án trong màn.
             feedback = if (correct) {
                 "Đúng rồi! 🎉"
             } else {
-                "Chưa đúng. Đáp án đúng là: $correctText"
+                "Chưa đúng."
             }
         }
         if (newScore >= GameRules.POINTS_TO_PASS) {
@@ -129,6 +131,9 @@ fun StageScreen(
             tts.stop()
             onBack()
         })
+        Spacer(modifier = Modifier.height(6.dp))
+        // Nền theo chặng: mỗi chặng 1 chủ đề thiên nhiên / động vật khác nhau.
+        StageBackdrop(stage)
         Spacer(modifier = Modifier.height(10.dp))
         if (newCycleMessage != null) {
             Text(
