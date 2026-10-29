@@ -52,12 +52,18 @@ private val FallingColors = listOf(
 // 5 làn cố định, cách mép màn để elip không bị cắt.
 private val Lanes = listOf(0.12f, 0.31f, 0.50f, 0.69f, 0.88f)
 
+private const val MaxFalling = 6
+
 private val EllipseShape = GenericShape { size, _ ->
     addOval(Rect(0f, 0f, size.width, size.height))
 }
 
 /**
- * Phần 5, SỬA V18 2026-10-29 theo phản hồi của anh:
+ * Phần 5, SỬA V19 2026-10-29 theo phản hồi của anh:
+ * - Chỉ 6 chữ cùng lúc (giảm mật độ), tốc độ chậm 0.003 (trước 0.005).
+ * - Mỗi lần thả 2 từ ở 2 làn cách nhau ít nhất 1 ô (chỉ số làn chênh
+ *   nhau ít nhất 2), cùng tốc độ nên cặp đó rơi cùng nhau, rơi qua đáy
+ *   cùng nhau, rồi thả cặp mới thay.
  * - 5 LÀN CỐ ĐỊNH, CÙNG TỐC ĐỘ, elip nhỏ 84x52dp. Chữ trong cùng làn
  *   cách nhau ít nhất 0.12 màn (khoảng 90dp) nên KHÔNG đè nhau, chữ ở
  *   mép cũng không bị cắt, lúc nào cũng nguyên hình elip, chỉ khác màu.
@@ -86,7 +92,7 @@ fun Stage5Content(
     var nextId by remember { mutableStateOf(0) }
     var firstBottomReached by remember { mutableStateOf(false) }
     var reReadDone by remember { mutableStateOf(false) }
-    var firstSpawnId by remember { mutableStateOf<Int?>(null) }
+    var firstSpawnIds by remember { mutableStateOf<Set<Int>>(emptySet()) }
 
     fun spawnWord(lane: Int, used: Set<String>): FallingWord {
         val w = WordBank.words.map { it.tu }
@@ -95,11 +101,11 @@ fun Stage5Content(
             id = nextId++,
             word = w,
             lane = lane,
-            speed = 0.005f,
+            speed = 0.003f,
             y = -0.12f,
             color = FallingColors.random(),
         )
-        if (firstSpawnId == null) firstSpawnId = item.id
+        if (falling.isEmpty()) firstSpawnIds = firstSpawnIds + item.id
         return item
     }
 
@@ -117,20 +123,27 @@ fun Stage5Content(
         var lastSpawnMs = 0L
         while (true) {
             val now = System.currentTimeMillis()
-            // Thả chữ vào làn nào mà chữ trên cùng của làn đó đã rơi
-            // xuống ít nhất 0.12 màn, để không đè nhau trong cùng làn.
-            if (falling.size < 10 && (firstBottomReached || now - lastSpawnMs >= 300L)) {
-                val used = falling.map { it.word }.toSet()
-                val lane = Lanes.indices.firstOrNull { li ->
+            // Thả từng lần 2 từ ở 2 làn cách nhau ít nhất 1 ô (chênh
+            // nhau ít nhất 2 làn), mỗi 800ms 1 lần, để không đè nhau.
+            // Thưa lúc đầu, đủ 6 thì thôi; sau khi chữ đầu chạm đáy thì
+            // thả ngay khi thiếu để luôn giữ 6.
+            if (falling.size < MaxFalling && (firstBottomReached || now - lastSpawnMs >= 800L)) {
+                val eligibleLanes = Lanes.indices.filter { li ->
                     val top = falling.filter { it.lane == li }.minByOrNull { it.y }
                     top == null || top.y > 0.12f
                 }
-                if (lane != null) {
+                val pair = listOf(0 to 2, 1 to 3, 2 to 4, 0 to 3, 1 to 4, 0 to 4)
+                    .firstOrNull { (a, b) -> a in eligibleLanes && b in eligibleLanes }
+                if (pair != null && falling.size <= MaxFalling - 2) {
                     lastSpawnMs = now
-                    falling = falling + spawnWord(lane, used)
-                } else if (firstBottomReached) {
-                    // Làn nào cũng kẹt thì chờ nhịp sau, không thả đè lên.
+                    var list = falling
+                    for (li in listOf(pair.first, pair.second)) {
+                        list = list + spawnWord(li, list.map { it.word }.toSet())
+                    }
+                    falling = list
+                } else if (eligibleLanes.isNotEmpty() && falling.size < MaxFalling) {
                     lastSpawnMs = now
+                    falling = falling + spawnWord(eligibleLanes.first(), falling.map { it.word }.toSet())
                 }
             }
             var newList = falling.map { it.copy(y = it.y + it.speed) }
@@ -144,21 +157,29 @@ fun Stage5Content(
                     if (cur != null) onAnswer(false, cur)
                 }
                 newList = newList.filter { it.y <= 1.05f }
-                // Thả chữ mới thay ngay để luôn giữ đủ 10.
-                while (newList.size < 10) {
-                    val used = newList.map { it.word }.toSet()
-                    val lane = Lanes.indices.firstOrNull { li ->
+                // Thả chữ mới thay ngay để luôn giữ 6, ưu tiên thả cặp
+                // ở 2 làn cách nhau ít nhất 1 ô khi thiếu từ 2 chữ trở lên.
+                while (newList.size < MaxFalling) {
+                    val eligibleLanes = Lanes.indices.filter { li ->
                         val top = newList.filter { it.lane == li }.minByOrNull { it.y }
                         top == null || top.y > 0.12f
-                    } ?: break
-                    newList = newList + spawnWord(lane, used)
+                    }
+                    val pair = listOf(0 to 2, 1 to 3, 2 to 4, 0 to 3, 1 to 4, 0 to 4)
+                        .firstOrNull { (a, b) -> a in eligibleLanes && b in eligibleLanes }
+                    if (pair != null && newList.size <= MaxFalling - 2) {
+                        for (li in listOf(pair.first, pair.second)) {
+                            newList = newList + spawnWord(li, newList.map { it.word }.toSet())
+                        }
+                    } else if (eligibleLanes.isNotEmpty()) {
+                        newList = newList + spawnWord(eligibleLanes.first(), newList.map { it.word }.toSet())
+                    } else break
                 }
             }
             falling = newList
             if (target == null) {
                 if (usedTargets.size >= WordBank.words.size) usedTargets = emptySet()
                 // Chữ đầu tiên thả không được làm đáp án của câu đầu.
-                val eligible = newList.filter { it.y < 0.5f && it.word !in usedTargets && it.id != firstSpawnId }
+                val eligible = newList.filter { it.y < 0.5f && it.word !in usedTargets && it.id !in firstSpawnIds }
                 if (eligible.isNotEmpty()) {
                     val chosen = eligible.random()
                     target = chosen.word

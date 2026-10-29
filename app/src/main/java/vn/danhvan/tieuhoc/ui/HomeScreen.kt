@@ -26,8 +26,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -75,6 +79,23 @@ private val HomeNodeFracs = listOf(
     0.265f to 0.822f,
     0.83f to 0.885f,
 )
+private val StarShape = GenericShape { size, _ ->
+    val cx = size.width / 2f
+    val cy = size.height / 2f
+    val outer = size.width / 2f
+    val inner = outer * 0.45f
+    var angle = -90.0
+    var first = true
+    for (i in 0 until 10) {
+        val r = if (i % 2 == 0) outer else inner
+        val rad = Math.toRadians(angle)
+        val x = cx + (r * kotlin.math.cos(rad)).toFloat()
+        val y = cy + (r * kotlin.math.sin(rad)).toFloat()
+        if (first) { moveTo(x, y); first = false } else { lineTo(x, y) }
+        angle += 36.0
+    }
+    close()
+}
 
 @Composable
 fun HomeScreen(
@@ -135,8 +156,9 @@ fun HomeScreen(
                 val frac = HomeNodeFracs[idx]
                 val unlocked = store.isUnlocked(stage.number)
                 val passed = store.isPassed(stage.number)
-                val bg = if (passed) KidGreen else if (unlocked) KidBlue else Color(0xFF757575)
-                val isWood = stage.number == 7
+                // V19: nút to gây vướng nên bỏ đĩa màu. Chưa qua: chỉ số
+                // trong suốt đè lên đĩa in trong ảnh. Qua rồi: sao vàng
+                // lớn đè lên đĩa in, số nằm bên trong sao.
                 Box(
                     modifier = Modifier
                         .offset {
@@ -144,9 +166,12 @@ fun HomeScreen(
                             val y = (frac.second * hPx - nodeHalfPx).roundToInt()
                             IntOffset(x, y)
                         }
-                        .size(88.dp).shadow(6.dp, CircleShape).clip(CircleShape)
-                        .background(if (isWood) Color(0xFF8D6E63) else bg)
-                        .border(3.dp, Color.White, CircleShape)
+                        .size(88.dp)
+                        .then(
+                            if (passed) Modifier.shadow(6.dp, StarShape).clip(StarShape)
+                                .background(Color(0xFFFFC107))
+                            else Modifier
+                        )
                         .clickable {
                             if (unlocked) {
                                 selectedStage = stage
@@ -156,17 +181,14 @@ fun HomeScreen(
                         },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text("${stage.number}", fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color.White)
-                }
-                if (passed) {
-                    Text(
-                        "⭐", fontSize = 16.sp,
-                        modifier = Modifier.offset {
-                            val x = (frac.first * wPx + 30.dp.toPx()).roundToInt()
-                            val y = (frac.second * hPx - nodeHalfPx).roundToInt()
-                            IntOffset(x, y)
-                        },
-                    )
+                    if (passed) {
+                        Text("${stage.number}", fontSize = 32.sp, fontWeight = FontWeight.Black, color = Color(0xFF4E342E))
+                    } else {
+                        Text(
+                            "${stage.number}", fontSize = 36.sp, fontWeight = FontWeight.Black, color = Color.White,
+                            style = TextStyle(shadow = Shadow(color = Color.Black, offset = Offset(3f, 3f), blurRadius = 6f)),
+                        )
+                    }
                 }
                 if (!unlocked) {
                     Text(
