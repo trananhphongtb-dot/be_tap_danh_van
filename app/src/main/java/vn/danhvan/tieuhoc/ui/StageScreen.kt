@@ -188,7 +188,7 @@ fun StageScreen(
                     Spacer(modifier = Modifier.height(20.dp))
                     BigButton(
                         text = "🏠 Về nhà",
-                        onClick = { tts.stop(); onBack() },
+                        onClick = { tts.stop(); store.resetAll(); onBack() },
                         color = KidBlue, modifier = Modifier.fillMaxWidth(),
                     )
                 } else {

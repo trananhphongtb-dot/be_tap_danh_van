@@ -19,6 +19,17 @@ class ProgressStore(context: Context) {
 
     fun allPassed(): Boolean = (1..7).all { isPassed(it) }
 
+    /** Reset về như ban đầu khi đã qua hết 7 phần: xóa dấu qua và
+     *  xóa lịch sử câu đã dùng của mọi phần, để chơi lại từ đầu. */
+    fun resetAll() {
+        val editor = prefs.edit()
+        for (i in 1..7) {
+            editor.remove("passed_$i")
+            editor.remove(usedKey(i))
+        }
+        editor.apply()
+    }
+
     fun isUnlocked(stage: Int): Boolean {
         if (UnlockRules.UNLOCK_ALL) return true
         if (stage <= 1) return true

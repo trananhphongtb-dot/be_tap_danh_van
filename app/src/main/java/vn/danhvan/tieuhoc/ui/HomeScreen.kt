@@ -155,10 +155,12 @@ fun HomeScreen(
                 if (idx !in HomeNodeFracs.indices) continue
                 val frac = HomeNodeFracs[idx]
                 val unlocked = store.isUnlocked(stage.number)
-                // V20: bỏ số hoàn toàn, số là số in sẵn trong ảnh.
-                // Đã mở (unlocked): sao mập vàng trùm hết nút, che luôn
-                // ổ khóa in sẵn. Chưa mở: chỉ vùng chạm trong suốt,
-                // không số code, không ổ khóa code, ổ khóa in sẵn đủ biết.
+                val passed = store.isPassed(stage.number)
+                // V21: sao mập vàng trùm hết nút, che luôn ổ khóa in sẵn,
+                // số nằm bên trong sao (sao che số in sẵn nên phải có số
+                // code). Chưa mở: chỉ vùng chạm trong suốt, ổ khóa in sẵn
+                // đủ biết. Thi xong (passed): thêm tích tròn béo góc trên
+                // phải. Đang thi (mở nhưng chưa qua): chỉ sao, không tích.
                 Box(
                     modifier = Modifier
                         .offset {
@@ -180,7 +182,27 @@ fun HomeScreen(
                             }
                         },
                     contentAlignment = Alignment.Center,
-                ) {}
+                ) {
+                    if (unlocked) {
+                        Text("${stage.number}", fontSize = 32.sp, fontWeight = FontWeight.Black, color = Color(0xFF4E342E))
+                    }
+                }
+                if (passed) {
+                    Box(
+                        modifier = Modifier
+                            .offset {
+                                val x = (frac.first * wPx + 30.dp.toPx()).roundToInt()
+                                val y = (frac.second * hPx - 30.dp.toPx()).roundToInt()
+                                IntOffset(x, y)
+                            }
+                            .size(32.dp)
+                            .shadow(4.dp, CircleShape)
+                            .background(Color(0xFF43A047), CircleShape),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text("✓", fontSize = 24.sp, fontWeight = FontWeight.Black, color = Color.White)
+                    }
+                }
             }
         }
     }
