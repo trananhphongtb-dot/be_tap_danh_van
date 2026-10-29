@@ -11,20 +11,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -37,8 +35,6 @@ import vn.danhvan.tieuhoc.data.NoRepeatPicker
 import vn.danhvan.tieuhoc.data.WordBank
 import kotlin.math.roundToInt
 
-private enum class FallShape { SQUARE, CIRCLE, TRIANGLE }
-
 private data class FallingWord(
     val id: Int,
     val word: String,
@@ -46,8 +42,6 @@ private data class FallingWord(
     val speed: Float,
     val y: Float,
     val color: Color,
-    val shape: FallShape,
-    val isTarget: Boolean,
 )
 
 private val FallingColors = listOf(
@@ -55,26 +49,25 @@ private val FallingColors = listOf(
     Color(0xFF43A047),
 )
 
-private val TriangleShape = GenericShape { size, _ ->
-    moveTo(size.width / 2f, 0f)
-    lineTo(size.width, size.height)
-    lineTo(0f, size.height)
-    close()
+// Hình elip gọn cho mọi chữ, chỉ khác màu, không còn vuông/tròn/tam giác.
+private val EllipseShape = GenericShape { size, _ ->
+    addOval(Rect(0f, 0f, size.width, size.height))
 }
 
 /**
- * Phần 5, SỬA 2026-10-29 theo phản hồi của anh:
- * - Không còn rơi 1 chữ một lần. Lúc đầu thả thưa dần, nhưng khi chữ
- *   đầu tiên đang rơi thì trên màn phải có đủ 10 chữ đang rơi, và luôn
- *   giữ đủ 10 chữ: chữ nào rơi qua màn thì thả chữ mới thay ngay.
- * - Mỗi lượt có đúng 1 chữ cần bắt trong 10 chữ đang rơi, 9 chữ còn lại
- *   là gây nhiễu. Chữ mới thả có thể là từ đã rơi ở lượt trước (chỉ từ
- *   cần bắt là lấy không lặp theo luật chung, từ gây nhiễu lấy ngẫu nhiên
- *   từ cả ngân hàng, không loại trừ lượt trước).
- * - Chạm đúng chữ cần bắt = +1 điểm, chạm nhầm = 1 sai, để chữ cần bắt
- *   rơi qua màn = 1 sai. Xong 1 lượt thì đọc từ mới, thả lại từ đầu.
- * - Cộng điểm đã sửa ở StageScreen.answer: phần 5 không dùng qIndex,
- *   nên mỗi lượt đều được chấm, không còn kẹt ở câu đầu.
+ * Phần 5, CHỐT MỚI 2026-10-29 (thay kiểu hết lượt xóa màn của V16):
+ * - Dòng rơi LIÊN TỤC, không reset theo lượt. Chữ nào rơi qua đáy thì
+ *   biến mất, chữ mới thả lên thay ngay.
+ * - Lúc đầu thả thưa dần (mỗi 300ms 1 chữ), nhưng từ khi chữ đầu tiên
+ *   rơi xuống đáy trở đi, trên màn LUÔN có đủ 10 chữ đang rơi.
+ * - Câu hỏi sau lấy luôn chữ đang rơi: từ cần bắt được chọn trong các
+ *   chữ đang rơi trên màn (còn ở nửa trên, chưa dùng làm đáp án trong
+ *   lần vào phần này), KHÔNG nhất thiết phải là chữ mới thả.
+ * - Chạm đúng chữ cần bắt = +1, chạm nhầm = 1 sai (và chữ nhầm đó biến
+ *   mất, câu mới chọn chữ khác đang rơi), để chữ cần bắt rơi qua đáy
+ *   = 1 sai, câu mới cũng chọn chữ khác đang rơi. Dòng rơi không dừng.
+ * - Cộng điểm chuẩn ở StageScreen.answer: phần 5 không dùng qIndex,
+ *   mỗi câu được chấm 1 lần, không kẹt ở câu đầu như lỗi cũ.
  */
 @Composable
 fun Stage5Content(
@@ -82,29 +75,17 @@ fun Stage5Content(
     picker: NoRepeatPicker,
     onAnswer: (Boolean, String) -> Unit,
     onNewCycle: () -> Unit,
+    isCompleted: Boolean = false,
 ) {
-    var cycle by remember { mutableIntStateOf(0) }
-    val pick = remember(cycle) {
-        picker.pick(5, WordBank.words) { it.id }
-    }
-    LaunchedEffect(pick?.newCycle) { if (pick?.newCycle == true) onNewCycle() }
-    val targetWord = pick?.item
-    if (targetWord == null) {
-        Text("Chưa có từ nào.", fontSize = 24.sp)
-        return
-    }
-    val target = targetWord.tu
-    LaunchedEffect(cycle, target) { tts.speak(target) }
-    var answered by remember(cycle) { mutableStateOf(false) }
-    var falling by remember(cycle) { mutableStateOf<List<FallingWord>>(emptyList()) }
-    var nextId by remember(cycle) { mutableIntStateOf(0) }
+    var falling by remember { mutableStateOf<List<FallingWord>>(emptyList()) }
+    var target by remember { mutableStateOf<String?>(null) }
+    var usedTargets by remember { mutableStateOf<Set<String>>(emptySet()) }
+    var nextId by remember { mutableStateOf(0) }
+    var firstBottomReached by remember { mutableStateOf(false) }
+    var reReadDone by remember { mutableStateOf(false) }
 
-    fun makeWord(isTarget: Boolean, used: Set<String>): FallingWord {
-        val w = if (isTarget) target else {
-            // Gây nhiễu: ngẫu nhiên từ ngân hàng, tránh trùng chữ đang rơi
-            // trong cùng lượt, nhưng được phép là từ của lượt trước.
-            WordBank.words.map { it.tu }.filter { it != target && it !in used }.random()
-        }
+    fun spawnWord(used: Set<String>): FallingWord {
+        val w = WordBank.words.map { it.tu }.filter { it !in used }.random()
         val item = FallingWord(
             id = nextId++,
             word = w,
@@ -112,72 +93,81 @@ fun Stage5Content(
             speed = 0.004f + kotlin.random.Random.nextFloat() * 0.003f,
             y = -0.12f,
             color = FallingColors.random(),
-            shape = FallShape.values().random(),
-            isTarget = isTarget,
         )
         return item
     }
 
-    fun endRound(correct: Boolean) {
-        if (answered) return
-        answered = true
-        onAnswer(correct, target)
-        cycle++
+    fun endQuestion(correct: Boolean, answeredWord: String) {
+        val cur = target ?: return
+        target = null
+        reReadDone = false
+        onAnswer(correct, cur)
+        // Chữ vừa trả lời (đúng hoặc nhầm) biến mất khỏi dòng rơi.
+        falling = falling.filter { it.word != answeredWord }
     }
 
-    LaunchedEffect(cycle) {
-        var reRead = false
-        var targetSpawned = false
+    // Vòng lặp duy nhất cho cả dòng rơi và câu hỏi, dừng khi hoàn thành.
+    LaunchedEffect(isCompleted) {
+        if (isCompleted) return@LaunchedEffect
         var lastSpawnMs = 0L
-        var startMs = System.currentTimeMillis()
-        while (!answered) {
+        while (true) {
             val now = System.currentTimeMillis()
-            // Thả thưa lúc đầu: chữ cần bắt thả đầu tiên, sau đó mỗi
-            // 300ms thả thêm 1 chữ, cho tới khi đủ 10 chữ đang rơi.
-            if (falling.size < 10 && now - lastSpawnMs >= 300L) {
+            // Thả chữ: thưa lúc đầu, đủ 10 thì thôi; sau khi chữ đầu
+            // chạm đáy thì thả ngay khi thiếu, luôn giữ đủ 10.
+            if (falling.size < 10 && (firstBottomReached || now - lastSpawnMs >= 300L)) {
                 lastSpawnMs = now
-                val used = falling.map { it.word }.toSet()
-                val item = if (!targetSpawned) {
-                    targetSpawned = true
-                    makeWord(true, used)
-                } else {
-                    makeWord(false, used)
-                }
-                falling = falling + item
+                falling = falling + spawnWord(falling.map { it.word }.toSet())
             }
             // Rơi xuống 1 nhịp.
             var newList = falling.map { it.copy(y = it.y + it.speed) }
-            val targetItem = newList.firstOrNull { it.isTarget }
-            if (targetItem != null && targetItem.y >= 0.5f && !reRead) {
-                reRead = true
-                tts.speak(target)
-            }
-            // Chữ cần bắt rơi qua màn: 1 sai, hết lượt.
-            if (targetItem != null && targetItem.y > 1.05f) {
-                endRound(false)
-                break
-            }
-            // Chữ gây nhiễu rơi qua: biến mất, thả chữ mới thay ngay để
-            // luôn giữ đủ 10 chữ đang rơi (khi đã đủ 10).
-            val exited = newList.filter { !it.isTarget && it.y > 1.05f }
+            // Chữ rơi qua đáy: biến mất. Nếu đó là chữ cần bắt thì 1 sai.
+            val exited = newList.filter { it.y > 1.05f }
             if (exited.isNotEmpty()) {
+                if (exited.any { it.word == target }) {
+                    firstBottomReached = true
+                    val cur = target
+                    target = null
+                    reReadDone = false
+                    if (cur != null) onAnswer(false, cur)
+                } else {
+                    firstBottomReached = true
+                }
                 newList = newList.filter { it.y <= 1.05f }
-                val used = newList.map { it.word }.toSet()
-                for (e in exited) {
-                    if (newList.size < 10) {
-                        newList = newList + makeWord(false, used + newList.map { it.word }.toSet())
+                // Thả chữ mới thay ngay để luôn giữ đủ 10 (sau chữ đầu chạm đáy).
+                if (firstBottomReached) {
+                    while (newList.size < 10) {
+                        newList = newList + spawnWord(newList.map { it.word }.toSet())
                     }
                 }
             }
             falling = newList
+            // Chọn câu hỏi mới trong các chữ đang rơi, còn ở nửa trên
+            // màn và chưa dùng làm đáp án trong lần vào phần này.
+            if (target == null) {
+                if (usedTargets.size >= WordBank.words.size) usedTargets = emptySet()
+                val eligible = newList.filter { it.y < 0.5f && it.word !in usedTargets }
+                if (eligible.isNotEmpty()) {
+                    val chosen = eligible.random()
+                    target = chosen.word
+                    usedTargets = usedTargets + chosen.word
+                    reReadDone = false
+                    tts.speak(chosen.word)
+                }
+            } else {
+                // Đọc lại 1 lần khi chữ cần bắt rơi tới nửa màn.
+                val targetItem = newList.firstOrNull { it.word == target }
+                if (targetItem != null && targetItem.y >= 0.5f && !reReadDone) {
+                    reReadDone = true
+                    tts.speak(target!!)
+                }
+            }
             delay(50)
-            // Tránh vòng lặp vô hạn nếu có lỗi: sau 60s mà chưa xong lượt thì thôi.
-            if (System.currentTimeMillis() - startMs > 60000L) break
         }
     }
 
+    val curTarget = target
     Column(modifier = Modifier.fillMaxSize()) {
-        SpeakButton(textToSpeak = target, tts = tts)
+        SpeakButton(textToSpeak = curTarget ?: "", tts = tts)
         Spacer(modifier = Modifier.height(10.dp))
         BoxWithConstraints(
             modifier = Modifier.fillMaxWidth().weight(1f),
@@ -186,25 +176,25 @@ fun Stage5Content(
             val widthPx = with(density) { maxWidth.toPx() }
             val heightPx = with(density) { maxHeight.toPx() }
             for (item in falling) {
-                val xPx = (item.xFrac * widthPx - 55f).roundToInt()
+                val xPx = (item.xFrac * widthPx - 52f).roundToInt()
                 val yPx = (item.y * heightPx).roundToInt()
-                val shapeModifier = when (item.shape) {
-                    FallShape.CIRCLE -> Modifier.clip(CircleShape)
-                    FallShape.TRIANGLE -> Modifier.clip(TriangleShape)
-                    else -> Modifier.clip(RoundedCornerShape(20.dp))
-                }
                 Box(
                     modifier = Modifier
                         .offset { IntOffset(xPx, yPx) }
-                        .size(110.dp, 68.dp)
-                        .then(shapeModifier)
+                        .size(104.dp, 60.dp)
+                        .clip(EllipseShape)
                         .background(item.color)
-                        .clickable(enabled = !answered) {
-                            endRound(item.isTarget)
+                        .clickable(enabled = curTarget != null && !isCompleted) {
+                            val t = target ?: return@clickable
+                            if (item.word == t) {
+                                endQuestion(true, item.word)
+                            } else {
+                                endQuestion(false, item.word)
+                            }
                         },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(item.word, fontSize = 30.sp, fontWeight = FontWeight.Black, color = Color.White)
+                    Text(item.word, fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color.White)
                 }
             }
         }

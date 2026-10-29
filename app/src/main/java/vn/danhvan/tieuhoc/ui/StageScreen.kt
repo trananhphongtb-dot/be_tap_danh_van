@@ -148,7 +148,7 @@ fun StageScreen(
                         2 -> Stage2Content(tts, picker, qIndex, isReview, onAnswer = { c, t -> answer(c, t) }, onNewCycle = { newCycleMessage = "Đã hết câu mới, bắt đầu vòng mới!" })
                         3 -> Stage3Content(tts, picker, qIndex, isReview, onAnswer = { c, t -> answer(c, t) }, onNewCycle = { newCycleMessage = "Đã hết câu mới, bắt đầu vòng mới!" })
                         4 -> Stage4Content(tts, picker, qIndex, isReview, onAnswer = { c, t -> answer(c, t) }, onNewCycle = { newCycleMessage = "Đã hết câu mới, bắt đầu vòng mới!" })
-                        5 -> Stage5Content(tts, picker, onAnswer = { c, t -> answer(c, t) }, onNewCycle = { newCycleMessage = "Đã hết câu mới, bắt đầu vòng mới!" })
+                        5 -> Stage5Content(tts, picker, onAnswer = { c, t -> answer(c, t) }, onNewCycle = { newCycleMessage = "Đã hết câu mới, bắt đầu vòng mới!" }, isCompleted = completed)
                         6 -> Stage6Content(tts, picker, qIndex, isReview, onAnswer = { c, t -> answer(c, t) }, onNewCycle = { newCycleMessage = "Đã hết câu mới, bắt đầu vòng mới!" })
                         else -> Stage7Content(tts, picker, qIndex, isReview, onAnswer = { c, t -> answer(c, t) }, onNewCycle = { newCycleMessage = "Đã hết câu mới, bắt đầu vòng mới!" })
                     }
