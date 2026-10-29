@@ -145,8 +145,6 @@ fun HomeScreen(
                 // Vẽ đường cong tự do qua các số, bằng Bezier mượt.
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val pts = HomeNodeFracs.map { Offset(it.first * size.width, it.second * size.height) }
-                    val path = Path()
-                    path.moveTo(pts[0].x, pts[0].y)
                     for (i in 0 until pts.size - 1) {
                         val p0 = if (i == 0) pts[0] else pts[i - 1]
                         val p1 = pts[i]
